@@ -11,7 +11,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-export default function Header({ onBookNowClick }) {
+export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavigateTo }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -23,20 +23,33 @@ export default function Header({ onBookNowClick }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (id) => {
+  const handleNavClick = (id) => {
     setMobileMenuOpen(false);
-    const element = document.getElementById(id);
-    if (element) {
-      const yOffset = -80;
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+    if (onNavigateTo) {
+      onNavigateTo(id);
+    } else {
+      const element = document.getElementById(id);
+      if (element) {
+        const yOffset = -80;
+        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
     }
+  };
+
+  const navItemClass = (id) => {
+    const isActive = activeSlideId === id;
+    return `px-3 py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer ${
+      isActive 
+        ? 'bg-blue-900 text-white shadow-sm' 
+        : 'text-slate-700 hover:text-blue-900 hover:bg-blue-50/80'
+    }`;
   };
 
   return (
     <>
       {/* Top micro bar for high-trust signaling */}
-      <div className="bg-blue-950 text-blue-100 text-xs py-2 px-4 border-b border-blue-900/60 transition-all">
+      <div className="bg-blue-950 text-blue-100 text-xs py-2 px-4 border-b border-blue-900/60 transition-all select-none">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-4 flex-wrap">
             <span className="inline-flex items-center gap-1.5 text-blue-200">
@@ -44,7 +57,7 @@ export default function Header({ onBookNowClick }) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <strong className="text-white font-medium">14 thợ đang trực sẵn</strong> tại Hải Châu, Thanh Khê, Sơn Trà, Cẩm Lệ...
+              <strong className="text-white font-medium">14 thợ đang trực sẵn</strong> tại Hải Châu, Thanh Khê, Sơn Trà...
             </span>
             <span className="hidden md:inline-flex items-center gap-1 text-blue-200">
               <Clock className="w-3.5 h-3.5 text-sky-400" />
@@ -58,7 +71,7 @@ export default function Header({ onBookNowClick }) {
 
           <div className="flex items-center gap-4 text-xs">
             <span className="hidden sm:inline text-amber-300 font-medium">
-              🎁 Ưu đãi: Giảm 10% khi vệ sinh từ 2 máy trở lên
+              🎁 Ưu đãi: Giảm 10% khi vệ sinh từ 2 máy
             </span>
             <a 
               href="tel:0905888666" 
@@ -83,7 +96,7 @@ export default function Header({ onBookNowClick }) {
           <div className="flex items-center justify-between h-20">
             {/* Logo and Slogan */}
             <div 
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              onClick={() => handleNavClick('hero')}
               className="flex items-center gap-3 cursor-pointer group"
             >
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-900 via-blue-800 to-sky-600 flex items-center justify-center text-white shadow-lg shadow-blue-900/20 group-hover:scale-105 transition-transform duration-200">
@@ -110,38 +123,38 @@ export default function Header({ onBookNowClick }) {
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center gap-1">
               <button 
-                onClick={() => scrollToSection('services')}
-                className="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-blue-900 hover:bg-blue-50/80 rounded-lg transition-colors cursor-pointer"
+                onClick={() => handleNavClick('services')}
+                className={navItemClass('services')}
               >
                 Dịch vụ
               </button>
               <button 
-                onClick={() => scrollToSection('pricing')}
-                className="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-blue-900 hover:bg-blue-50/80 rounded-lg transition-colors cursor-pointer"
+                onClick={() => handleNavClick('pricing')}
+                className={navItemClass('pricing')}
               >
                 Bảng giá
               </button>
               <button 
-                onClick={() => scrollToSection('process')}
-                className="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-blue-900 hover:bg-blue-50/80 rounded-lg transition-colors cursor-pointer"
+                onClick={() => handleNavClick('process')}
+                className={navItemClass('process')}
               >
                 Quy trình 3 bước
               </button>
               <button 
-                onClick={() => scrollToSection('coverage')}
-                className="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-blue-900 hover:bg-blue-50/80 rounded-lg transition-colors cursor-pointer"
+                onClick={() => handleNavClick('coverage')}
+                className={navItemClass('coverage')}
               >
                 Khu vực phục vụ
               </button>
               <button 
-                onClick={() => scrollToSection('reviews')}
-                className="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-blue-900 hover:bg-blue-50/80 rounded-lg transition-colors cursor-pointer"
+                onClick={() => handleNavClick('reviews')}
+                className={navItemClass('reviews')}
               >
                 Đánh giá
               </button>
               <button 
-                onClick={() => scrollToSection('faqs')}
-                className="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-blue-900 hover:bg-blue-50/80 rounded-lg transition-colors cursor-pointer"
+                onClick={() => handleNavClick('faqs')}
+                className={navItemClass('faqs')}
               >
                 Hỏi đáp
               </button>
@@ -204,42 +217,42 @@ export default function Header({ onBookNowClick }) {
               </div>
 
               <button 
-                onClick={() => scrollToSection('services')}
+                onClick={() => handleNavClick('services')}
                 className="w-full flex items-center justify-between px-3 py-2.5 text-base font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-900 rounded-lg text-left"
               >
                 <span>Dịch vụ sửa chữa & bảo dưỡng</span>
                 <ChevronRight className="w-4 h-4 text-slate-400" />
               </button>
               <button 
-                onClick={() => scrollToSection('pricing')}
+                onClick={() => handleNavClick('pricing')}
                 className="w-full flex items-center justify-between px-3 py-2.5 text-base font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-900 rounded-lg text-left"
               >
                 <span>Bảng giá minh bạch</span>
                 <ChevronRight className="w-4 h-4 text-slate-400" />
               </button>
               <button 
-                onClick={() => scrollToSection('process')}
+                onClick={() => handleNavClick('process')}
                 className="w-full flex items-center justify-between px-3 py-2.5 text-base font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-900 rounded-lg text-left"
               >
                 <span>Quy trình đặt thợ 3 bước</span>
                 <ChevronRight className="w-4 h-4 text-slate-400" />
               </button>
               <button 
-                onClick={() => scrollToSection('coverage')}
+                onClick={() => handleNavClick('coverage')}
                 className="w-full flex items-center justify-between px-3 py-2.5 text-base font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-900 rounded-lg text-left"
               >
                 <span>Các quận phục vụ tại Đà Nẵng</span>
                 <ChevronRight className="w-4 h-4 text-slate-400" />
               </button>
               <button 
-                onClick={() => scrollToSection('reviews')}
+                onClick={() => handleNavClick('reviews')}
                 className="w-full flex items-center justify-between px-3 py-2.5 text-base font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-900 rounded-lg text-left"
               >
                 <span>Khách hàng đánh giá</span>
                 <ChevronRight className="w-4 h-4 text-slate-400" />
               </button>
               <button 
-                onClick={() => scrollToSection('faqs')}
+                onClick={() => handleNavClick('faqs')}
                 className="w-full flex items-center justify-between px-3 py-2.5 text-base font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-900 rounded-lg text-left"
               >
                 <span>Câu hỏi thường gặp</span>

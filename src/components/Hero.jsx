@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { DANANG_DISTRICTS } from '../data/coolcallData';
 
-export default function Hero({ onSearchSubmit, onSelectQuickService }) {
+export default function Hero({ onSearchSubmit, onSelectQuickService, onGoNext }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('hai-chau');
 
@@ -173,6 +173,30 @@ export default function Hero({ onSearchSubmit, onSelectQuickService }) {
                 </div>
               </div>
             </div>
+
+            {/* Swipe guide banner */}
+            {onGoNext && (
+              <div 
+                onClick={onGoNext}
+                className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-blue-900 via-blue-800 to-sky-700 hover:from-blue-800 hover:to-sky-600 text-white shadow-lg shadow-blue-900/15 flex items-center justify-between gap-3 cursor-pointer group transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xl">👉</span>
+                  <div className="text-left">
+                    <p className="text-xs sm:text-sm font-bold leading-tight">
+                      Vuốt sang phải để xem tiếp các mục
+                    </p>
+                    <p className="text-[11px] text-sky-200">
+                      Dịch vụ • Quy trình • Đặt lịch • Bảng giá • Đánh giá
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-sky-300 bg-white/10 px-3 py-1.5 rounded-xl border border-white/20 group-hover:bg-white/20 transition-all shrink-0">
+                  <span>Xem dịch vụ</span>
+                  <span className="text-sm group-hover:translate-x-1 transition-transform">➔</span>
+                </div>
+              </div>
+            )}
 
           </div>
 

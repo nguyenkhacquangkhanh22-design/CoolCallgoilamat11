@@ -8,13 +8,17 @@ import {
   ArrowUp
 } from 'lucide-react';
 
-export default function Footer({ onScrollToTop }) {
+export default function Footer({ onScrollToTop, onNavigateTo }) {
   const scrollTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      const yOffset = -80;
-      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+    if (onNavigateTo) {
+      onNavigateTo(id);
+    } else {
+      const el = document.getElementById(id);
+      if (el) {
+        const yOffset = -80;
+        const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
     }
   };
 
