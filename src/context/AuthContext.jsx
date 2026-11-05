@@ -38,10 +38,15 @@ export function AuthProvider({ children }) {
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMessage, setAuthModalMessage] = useState('');
-  const [initialAuthTab, setInitialAuthTab] = useState('register'); // 'register' | 'login' | 'google'
+  const [authMode, setAuthMode] = useState('register'); // 'register' | 'login'
+  const [initialAuthTab, setInitialAuthTab] = useState('phone-register'); // 'phone-register' | 'google-register' | 'login' | 'google'
 
   // Google OTP State
   const [googleOtpState, setGoogleOtpState] = useState(null);
+
+  // Phone OTP State & Simulated SMS Toast
+  const [phoneOtpState, setPhoneOtpState] = useState(null);
+  const [simulatedSmsToast, setSimulatedSmsToast] = useState(null);
 
   // Global Toast State
   const [toast, setToast] = useState(null);
@@ -57,15 +62,127 @@ export function AuthProvider({ children }) {
     setToast(null);
   };
 
+  const closeSimulatedSmsToast = () => {
+    setSimulatedSmsToast(null);
+  };
+
   const openAuthModal = (options = {}) => {
     setAuthModalMessage(options.message || 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!');
-    setInitialAuthTab(options.tab || 'register');
+    const mode = options.mode || (options.tab === 'login' ? 'login' : 'register');
+    setAuthMode(mode);
+    if (options.tab) {
+      setInitialAuthTab(options.tab);
+    } else {
+      setInitialAuthTab(mode === 'login' ? 'login' : 'phone-register');
+    }
     setIsAuthModalOpen(true);
   };
 
   const closeAuthModal = () => {
     setIsAuthModalOpen(false);
     setAuthModalMessage('');
+    setSimulatedSmsToast(null);
+  };
+
+  // 1. Phone SMS OTP Flow
+  const sendPhoneOtp = async (phoneNumber, fullName) => {
+    const cleanPhone = (phoneNumber || '').replace(/[\s.-]/g, '');
+    const cleanName = (fullName || '').trim() || 'Khách Hàng';
+
+    const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
+    if (!phoneRegex.test(cleanPhone)) {
+      return { success: false, message: 'Số điện thoại không hợp lệ (VD: 0905 123 456)' };
+    }
+
+    // Generate strict random 6-digit OTP
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 5 * 60 * 1000;
+
+    const otpData = {
+      phoneNumber: cleanPhone,
+      fullName: cleanName,
+      otp: generatedOtp,
+      expiresAt,
+      sentAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setPhoneOtpState(otpData);
+
+    // Show simulated SMS push notification floating on screen
+    setSimulatedSmsToast({
+      phoneNumber: cleanPhone,
+      fullName: cleanName,
+      otp: generatedOtp,
+      time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+    });
+
+    return { success: true, otp: generatedOtp, phoneNumber: cleanPhone };
+  };
+
+  const resendPhoneOtp = async () => {
+    if (!phoneOtpState?.phoneNumber) return { success: false, message: 'Chưa có thông tin số điện thoại' };
+    return await sendPhoneOtp(phoneOtpState.phoneNumber, phoneOtpState.fullName);
+  };
+
+  const verifyPhoneOtp = async (inputOtp, password) => {
+    if (!phoneOtpState) {
+      return { success: false, message: 'Vui lòng nhập số điện thoại để nhận mã xác thực trước.' };
+    }
+
+    if (Date.now() > phoneOtpState.expiresAt) {
+      return { success: false, message: 'Mã xác thực đã hết hạn (quá 5 phút). Vui lòng nhấn gửi lại mã mới.' };
+    }
+
+    const cleanInput = (inputOtp || '').trim();
+    if (cleanInput !== phoneOtpState.otp) {
+      return { 
+        success: false, 
+        message: 'Mã xác thực OTP không chính xác. Vui lòng kiểm tra lại 6 chữ số gửi về số điện thoại!' 
+      };
+    }
+
+    // OTP Verified! Save customer to local storage and sync
+    const localUsers = JSON.parse(localStorage.getItem('coolcall_registered_users') || '[]');
+    const newCustomer = {
+      id: 'usr_p_' + Date.now(),
+      fullName: phoneOtpState.fullName,
+      phoneNumber: phoneOtpState.phoneNumber,
+      password: password || '123456',
+      role: 'customer',
+      provider: 'phone_otp',
+      verifiedAt: new Date().toISOString()
+    };
+
+    const existingIdx = localUsers.findIndex(u => u.phoneNumber === phoneOtpState.phoneNumber);
+    if (existingIdx >= 0) {
+      localUsers[existingIdx] = newCustomer;
+    } else {
+      localUsers.push(newCustomer);
+    }
+    localStorage.setItem('coolcall_registered_users', JSON.stringify(localUsers));
+
+    const sessionCustomer = {
+      id: newCustomer.id,
+      fullName: newCustomer.fullName,
+      phoneNumber: newCustomer.phoneNumber,
+      role: 'customer',
+      provider: 'phone_otp',
+      verifiedAt: newCustomer.verifiedAt
+    };
+
+    setUser(sessionCustomer);
+    setRole('customer');
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionCustomer));
+    setPhoneOtpState(null);
+    setSimulatedSmsToast(null);
+    closeAuthModal();
+
+    showToast(
+      `🎉 Chúc mừng ${sessionCustomer.fullName}! Xác thực số điện thoại (${sessionCustomer.phoneNumber}) thành công. Bạn đã trở thành Khách Hàng (Customer) và có thể đặt thợ gọi thợ ngay!`,
+      'success'
+    );
+
+    return { success: true };
   };
 
   // 1. Google Personal Gmail OTP Flow
@@ -328,11 +445,18 @@ export function AuthProvider({ children }) {
         isCustomer: role === 'customer',
         isAuthModalOpen,
         authModalMessage,
+        authMode,
         initialAuthTab,
         googleOtpState,
+        phoneOtpState,
+        simulatedSmsToast,
+        closeSimulatedSmsToast,
         toast,
         openAuthModal,
         closeAuthModal,
+        sendPhoneOtp,
+        resendPhoneOtp,
+        verifyPhoneOtp,
         sendGoogleOtp,
         verifyGoogleOtp,
         resendGoogleOtp,

@@ -275,7 +275,7 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
                     <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto flex-wrap">
                       <button
                         type="button"
-                        onClick={() => openAuthModal({ tab: 'register', message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' })}
+                        onClick={() => openAuthModal({ mode: 'register', tab: 'phone-register', message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' })}
                         className="flex-1 sm:flex-none px-3.5 py-2.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
                       >
                         <UserPlus className="w-3.5 h-3.5" />
@@ -283,7 +283,7 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
                       </button>
                       <button
                         type="button"
-                        onClick={() => openAuthModal({ tab: 'login', message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' })}
+                        onClick={() => openAuthModal({ mode: 'login', tab: 'login', message: 'Đăng nhập tài khoản của bạn để đặt thợ hoặc gọi thợ!' })}
                         className="flex-1 sm:flex-none px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
                       >
                         <LogIn className="w-3.5 h-3.5 text-blue-700" />

@@ -193,7 +193,8 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                   <button
                     type="button"
                     onClick={() => openAuthModal({ 
-                      tab: 'register', 
+                      mode: 'register',
+                      tab: 'phone-register', 
                       message: 'Quý khách vui lòng Đăng ký tài khoản để kích hoạt quyền đặt thợ và gọi thợ!' 
                     })}
                     className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-blue-300 hover:border-blue-400 bg-blue-50/80 hover:bg-blue-100 text-blue-950 font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-xs whitespace-nowrap shrink-0"
@@ -206,6 +207,7 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                   <button
                     type="button"
                     onClick={() => openAuthModal({ 
+                      mode: 'login',
                       tab: 'login', 
                       message: 'Đăng nhập tài khoản của bạn (đã đăng ký thành công) để đặt thợ hoặc gọi thợ!' 
                     })}
@@ -363,7 +365,8 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                       onClick={() => {
                         setMobileMenuOpen(false);
                         openAuthModal({ 
-                          tab: 'register', 
+                          mode: 'register',
+                          tab: 'phone-register', 
                           message: 'Quý khách vui lòng Đăng ký tài khoản để kích hoạt quyền đặt thợ và gọi thợ!' 
                         });
                       }}
@@ -377,6 +380,7 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                       onClick={() => {
                         setMobileMenuOpen(false);
                         openAuthModal({ 
+                          mode: 'login',
                           tab: 'login', 
                           message: 'Đăng nhập tài khoản của bạn (đã đăng ký thành công) để đặt thợ hoặc gọi thợ!' 
                         });
