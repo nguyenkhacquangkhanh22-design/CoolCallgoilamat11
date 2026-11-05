@@ -61,6 +61,22 @@ export function validateBookingInput(data) {
     errors.push('Số lượng máy phải từ 1 đến 20 máy');
   }
 
+  // Validate appointment date: MUST NOT be in the past
+  const scheduleTypeStr = sanitizeString(data.scheduleType || '');
+  const dateMatch = scheduleTypeStr.match(/(\d{4}-\d{2}-\d{2})/);
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const todayStr = `${year}-${month}-${day}`;
+
+  if (dateMatch) {
+    const selectedDate = dateMatch[1];
+    if (selectedDate < todayStr) {
+      errors.push(`Ngày hẹn (${selectedDate}) không thể ở trong quá khứ. Vui lòng chọn ngày hôm nay hoặc tương lai.`);
+    }
+  }
+
   return {
     isValid: errors.length === 0,
     errors,

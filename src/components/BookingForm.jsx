@@ -15,7 +15,30 @@ import {
 } from 'lucide-react';
 import { DANANG_DISTRICTS, SERVICES, AC_TYPES, AC_BRANDS, COMMON_ISSUES } from '../data/coolcallData';
 
+// Helper to format local date string (YYYY-MM-DD)
+const getLocalDateString = (offsetDays = 0) => {
+  const d = new Date();
+  if (offsetDays) d.setDate(d.getDate() + offsetDays);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const TIME_SLOTS = [
+  { value: '08:00 - 10:00', label: 'Buổi sáng (08:00 - 10:00)', endHour: 10 },
+  { value: '10:00 - 12:00', label: 'Buổi trưa (10:00 - 12:00)', endHour: 12 },
+  { value: '13:00 - 15:00', label: 'Đầu giờ chiều (13:00 - 15:00)', endHour: 15 },
+  { value: '15:00 - 17:00', label: 'Cuối giờ chiều (15:00 - 17:00)', endHour: 17 },
+  { value: '17:00 - 19:00', label: 'Buổi tối (17:00 - 19:00)', endHour: 19 },
+  { value: '19:00 - 21:00', label: 'Tối muộn (19:00 - 21:00)', endHour: 21 },
+];
+
 export default function BookingForm({ selectedServiceFromParent, initialDistrict = 'hai-chau', onBookingSubmit }) {
+  const [todayStr] = useState(() => getLocalDateString(0));
+  const [maxDateStr] = useState(() => getLocalDateString(60));
+  const [currentHour] = useState(() => new Date().getHours());
+
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [district, setDistrict] = useState(initialDistrict);
@@ -26,15 +49,28 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
   const [acQuantity, setAcQuantity] = useState(1);
   const [issueDescription, setIssueDescription] = useState('');
   const [scheduleType, setScheduleType] = useState('urgent'); // 'urgent' | 'scheduled'
+
+  // If after 20:00, default scheduled date to tomorrow
   const [appointmentDate, setAppointmentDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+    return new Date().getHours() >= 20 ? getLocalDateString(1) : getLocalDateString(0);
   });
-  const [appointmentSlot, setAppointmentSlot] = useState('08:00 - 10:00');
+  const [appointmentSlot, setAppointmentSlot] = useState(() => {
+    const h = new Date().getHours();
+    const nextSlot = TIME_SLOTS.find(s => s.endHour > h + 1);
+    return nextSlot ? nextSlot.value : '08:00 - 10:00';
+  });
   const [customerNote, setCustomerNote] = useState('');
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check if a slot has passed today
+  const isSlotPassed = (slotEndHour) => {
+    if (appointmentDate === todayStr) {
+      return currentHour >= slotEndHour;
+    }
+    return false;
+  };
 
   // Sync when parent changes district or selected service during render
   const [prevDistrict, setPrevDistrict] = useState(initialDistrict);
@@ -87,8 +123,17 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
       newErrors.addressDetail = 'Vui lòng nhập địa chỉ cụ thể (số nhà, tên đường)';
     }
 
-    if (scheduleType === 'scheduled' && !appointmentDate) {
-      newErrors.appointmentDate = 'Vui lòng chọn ngày hẹn';
+    if (scheduleType === 'scheduled') {
+      if (!appointmentDate) {
+        newErrors.appointmentDate = 'Vui lòng chọn ngày hẹn';
+      } else if (appointmentDate < todayStr) {
+        newErrors.appointmentDate = 'Ngày hẹn không thể ở quá khứ. Vui lòng chọn ngày hôm nay hoặc tương lai.';
+      } else if (appointmentDate === todayStr) {
+        const selectedSlotObj = TIME_SLOTS.find((s) => s.value === appointmentSlot);
+        if (selectedSlotObj && currentHour >= selectedSlotObj.endHour) {
+          newErrors.appointmentDate = `Khung giờ "${appointmentSlot}" hôm nay đã qua (${currentHour}h). Vui lòng chọn khung giờ khác hoặc ngày mai.`;
+        }
+      }
     }
 
     setErrors(newErrors);
@@ -517,34 +562,68 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
                 {scheduleType === 'scheduled' && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-blue-50/50 border border-blue-100 animate-in fade-in">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                        Chọn ngày hẹn
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                        <span>Chọn ngày hẹn <span className="text-rose-500">*</span></span>
+                        <span className="text-[11px] text-blue-700 font-normal">Từ hôm nay: {todayStr}</span>
                       </label>
                       <input
                         type="date"
+                        min={todayStr}
+                        max={maxDateStr}
                         value={appointmentDate}
-                        onChange={(e) => setAppointmentDate(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-800"
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val && val < todayStr) {
+                            setAppointmentDate(todayStr);
+                            setErrors((prev) => ({
+                              ...prev,
+                              appointmentDate: 'Không được chọn ngày trong quá khứ! Đã tự động chọn ngày hôm nay.'
+                            }));
+                          } else {
+                            setAppointmentDate(val);
+                            if (errors.appointmentDate) {
+                              setErrors((prev) => ({ ...prev, appointmentDate: null }));
+                            }
+                          }
+                        }}
+                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-800 transition-all ${
+                          errors.appointmentDate ? 'border-rose-400 bg-rose-50/60' : 'border-slate-200 bg-white'
+                        }`}
                       />
                     </div>
 
                     <div>
                       <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                        Khung giờ hẹn
+                        Khung giờ hẹn <span className="text-rose-500">*</span>
                       </label>
                       <select
                         value={appointmentSlot}
-                        onChange={(e) => setAppointmentSlot(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-800"
+                        onChange={(e) => {
+                          setAppointmentSlot(e.target.value);
+                          if (errors.appointmentDate) {
+                            setErrors((prev) => ({ ...prev, appointmentDate: null }));
+                          }
+                        }}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-800 cursor-pointer"
                       >
-                        <option value="08:00 - 10:00">Buổi sáng (08:00 - 10:00)</option>
-                        <option value="10:00 - 12:00">Buổi trưa (10:00 - 12:00)</option>
-                        <option value="13:00 - 15:00">Đầu giờ chiều (13:00 - 15:00)</option>
-                        <option value="15:00 - 17:00">Cuối giờ chiều (15:00 - 17:00)</option>
-                        <option value="17:00 - 19:00">Buổi tối (17:00 - 19:00)</option>
-                        <option value="19:00 - 21:00">Tối muộn (19:00 - 21:00)</option>
+                        {TIME_SLOTS.map((slot) => {
+                          const passed = isSlotPassed(slot.endHour);
+                          return (
+                            <option key={slot.value} value={slot.value} disabled={passed}>
+                              {slot.label} {passed ? '(Đã qua)' : ''}
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
+
+                    {/* Error display banner */}
+                    {errors.appointmentDate && (
+                      <div className="sm:col-span-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+                        <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                        <span>{errors.appointmentDate}</span>
+                      </div>
+                    )}
                   </div>
                 )}
 
