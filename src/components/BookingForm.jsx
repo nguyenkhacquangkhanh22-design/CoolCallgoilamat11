@@ -13,8 +13,8 @@ import {
   Send, 
   Building,
   Lock,
-  LogIn,
-  UserPlus
+  UserPlus,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
 import { DANANG_DISTRICTS, SERVICES, AC_TYPES, AC_BRANDS, COMMON_ISSUES } from '../data/coolcallData';
@@ -160,8 +160,8 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
     // ROLE CHECK: Guest cannot call or book technician
     if (isGuest) {
       openAuthModal({
-        tab: 'login',
-        message: '🔒 Bạn đang ở quyền Khách (Guest - Chỉ xem). Vui lòng Đăng nhập hoặc Đăng ký tài khoản để gọi thợ đặt lịch!'
+        tab: 'google',
+        message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!'
       });
       return;
     }
@@ -267,26 +267,26 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
                           <span className="px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 text-[10px] font-black uppercase">Chỉ xem</span>
                         </div>
                         <p className="text-xs text-amber-800 mt-1 leading-relaxed">
-                          Bạn hiện đang ở quyền Guest nên <strong>chưa thể gọi thợ hoặc đặt lịch</strong>. Vui lòng đăng nhập hoặc tạo tài khoản mới (Google hoặc SĐT) để kích hoạt quyền gọi thợ.
+                          Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ! Quý khách có thể xác thực nhanh qua <strong>Google Gmail cá nhân</strong> hoặc đăng ký số điện thoại.
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
                       <button
                         type="button"
-                        onClick={() => openAuthModal({ tab: 'login', message: 'Đăng nhập tài khoản để đặt thợ sửa máy lạnh!' })}
+                        onClick={() => openAuthModal({ tab: 'google', message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' })}
                         className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                       >
-                        <LogIn className="w-3.5 h-3.5 text-sky-300" />
-                        <span>Đăng nhập</span>
+                        <Sparkles className="w-3.5 h-3.5 text-sky-300" />
+                        <span>Google Gmail</span>
                       </button>
                       <button
                         type="button"
-                        onClick={() => openAuthModal({ tab: 'register', message: 'Đăng ký tài khoản nhanh để kích hoạt quyền gọi thợ!' })}
+                        onClick={() => openAuthModal({ tab: 'register', message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' })}
                         className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         <UserPlus className="w-3.5 h-3.5" />
-                        <span>Đăng ký</span>
+                        <span>Đăng ký mới</span>
                       </button>
                     </div>
                   </div>
@@ -310,8 +310,40 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
                 </div>
               )}
 
-              {/* Section 1: Customer Contact info */}
-              <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs">
+              {/* Interactive Form Fields Container (Locked with overlay for Guest) */}
+              <div className="relative">
+                {isGuest && (
+                  <div 
+                    onClick={() => openAuthModal({ 
+                      tab: 'google', 
+                      message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' 
+                    })}
+                    className="absolute inset-0 z-30 bg-slate-900/10 hover:bg-slate-900/20 backdrop-blur-[1px] rounded-2xl flex items-center justify-center p-4 transition-all cursor-pointer group"
+                  >
+                    <div className="p-6 bg-white/95 rounded-2xl shadow-2xl border-2 border-blue-900 max-w-md text-center transform group-hover:scale-102 transition-transform">
+                      <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto mb-2.5">
+                        <Lock className="w-6 h-6" />
+                      </div>
+                      <h4 className="text-base font-black text-blue-950 uppercase tracking-wide">
+                        Khóa Quyền Đặt Thợ Đối Với Khách (Guest)
+                      </h4>
+                      <p className="text-xs text-slate-600 mt-1 mb-4 leading-relaxed">
+                        Bạn phải đăng ký hoặc đăng nhập tài khoản (bằng Google Gmail hoặc SĐT) để đặt thợ hoặc gọi thợ!
+                      </p>
+                      <button
+                        type="button"
+                        className="w-full py-3 px-4 rounded-xl bg-blue-900 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <Sparkles className="w-4 h-4 text-sky-300" />
+                        <span>Bấm để Đăng nhập Google / Đăng ký tài khoản</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div className={isGuest ? 'opacity-50 pointer-events-none select-none space-y-6' : 'space-y-6'}>
+                  {/* Section 1: Customer Contact info */}
+                  <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs">
                 <h3 className="text-base font-bold text-blue-950 mb-4 flex items-center gap-2">
                   <div className="w-6 h-6 rounded-lg bg-blue-100 text-blue-900 flex items-center justify-center text-xs font-black">
                     1
@@ -723,6 +755,9 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
                 </div>
               </div>
 
+                </div>
+              </div>
+
             </div>
 
             {/* Right 4 columns: Live Quote Summary & Submit CTA */}
@@ -834,7 +869,16 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
                 </div>
                 <a
                   href="tel:0905888666"
-                  className="px-3.5 py-2 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs flex items-center gap-1.5 transition-colors"
+                  onClick={(e) => {
+                    if (isGuest) {
+                      e.preventDefault();
+                      openAuthModal({
+                        tab: 'google',
+                        message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để gọi thợ hỗ trợ!'
+                      });
+                    }
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <Phone className="w-3.5 h-3.5 text-sky-300" />
                   <span>0905.888.666</span>

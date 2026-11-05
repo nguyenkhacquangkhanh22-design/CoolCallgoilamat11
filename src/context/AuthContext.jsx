@@ -37,11 +37,28 @@ export function AuthProvider({ children }) {
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMessage, setAuthModalMessage] = useState('');
-  const [initialAuthTab, setInitialAuthTab] = useState('login'); // 'login' | 'register'
+  const [initialAuthTab, setInitialAuthTab] = useState('google'); // 'google' | 'login' | 'register'
+
+  // Google OTP State
+  const [googleOtpState, setGoogleOtpState] = useState(null);
+
+  // Global Toast State
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 6000);
+  };
+
+  const closeToast = () => {
+    setToast(null);
+  };
 
   const openAuthModal = (options = {}) => {
-    setAuthModalMessage(options.message || 'Vui lòng đăng nhập hoặc đăng ký tài khoản để gọi thợ!');
-    setInitialAuthTab(options.tab || 'login');
+    setAuthModalMessage(options.message || 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!');
+    setInitialAuthTab(options.tab || 'google');
     setIsAuthModalOpen(true);
   };
 
@@ -50,13 +67,103 @@ export function AuthProvider({ children }) {
     setAuthModalMessage('');
   };
 
-  // Login with phone and password
+  // 1. Google Personal Gmail OTP Flow
+  const sendGoogleOtp = async (email, fullName) => {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanName = (fullName || '').trim() || cleanEmail.split('@')[0];
+
+    // Generate random 6-digit OTP
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
+
+    const otpData = {
+      email: cleanEmail,
+      fullName: cleanName,
+      otp: generatedOtp,
+      expiresAt,
+      sentAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    };
+
+    setGoogleOtpState(otpData);
+
+    // Also attempt backend notification if backend is alive
+    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    try {
+      await fetch(`${apiUrl}/auth/google-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail, fullName: cleanName, otp: generatedOtp })
+      });
+    } catch {
+      // client-side simulation is fully resilient
+    }
+
+    return { success: true, otp: generatedOtp, email: cleanEmail };
+  };
+
+  const resendGoogleOtp = async () => {
+    if (!googleOtpState?.email) return { success: false, message: 'Chưa có thông tin email' };
+    return await sendGoogleOtp(googleOtpState.email, googleOtpState.fullName);
+  };
+
+  const verifyGoogleOtp = async (inputOtp) => {
+    if (!googleOtpState) {
+      return { success: false, message: 'Vui lòng nhập email để nhận mã xác thực trước.' };
+    }
+
+    if (Date.now() > googleOtpState.expiresAt) {
+      return { success: false, message: 'Mã xác thực đã hết hạn (quá 5 phút). Vui lòng nhấn gửi lại mã mới.' };
+    }
+
+    const cleanInput = (inputOtp || '').trim();
+    if (cleanInput !== googleOtpState.otp) {
+      return { success: false, message: 'Mã xác thực không chính xác. Vui lòng kiểm tra lại 6 chữ số trong hộp thư Gmail của bạn!' };
+    }
+
+    // OTP Verified! Upgrade user to CUSTOMER
+    const verifiedCustomer = {
+      id: 'usr_gg_' + Date.now(),
+      fullName: googleOtpState.fullName,
+      email: googleOtpState.email,
+      phoneNumber: '0905888999',
+      role: 'customer',
+      provider: 'google',
+      verifiedAt: new Date().toISOString(),
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'
+    };
+
+    setUser(verifiedCustomer);
+    setRole('customer');
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(verifiedCustomer));
+    setGoogleOtpState(null);
+    closeAuthModal();
+
+    showToast(
+      `🎉 Chúc mừng ${verifiedCustomer.fullName}! Xác thực Google (${verifiedCustomer.email}) thành công. Bạn đã trở thành Khách Hàng (Customer) và có thể đặt thợ gọi thợ ngay!`,
+      'success'
+    );
+
+    // Sync to backend asynchronously
+    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    try {
+      await fetch(`${apiUrl}/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(verifiedCustomer)
+      });
+    } catch {
+      // offline fallback
+    }
+
+    return { success: true };
+  };
+
+  // 2. Normal Login with Phone and Password
   const login = async (phoneNumber, password) => {
     const cleanPhone = phoneNumber.replace(/[\s.-]/g, '');
     const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
     try {
-      // Try backend first
       const res = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -69,6 +176,7 @@ export function AuthProvider({ children }) {
         setRole('customer');
         localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedUser));
         closeAuthModal();
+        showToast(`🎉 Đăng nhập thành công! Chào mừng Khách Hàng ${loggedUser.fullName} quay trở lại CoolCall.`, 'success');
         return { success: true };
       } else {
         const errData = await res.json();
@@ -90,10 +198,11 @@ export function AuthProvider({ children }) {
         setRole('customer');
         localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedUser));
         closeAuthModal();
+        showToast(`🎉 Đăng nhập thành công! Chào mừng Khách Hàng ${loggedUser.fullName} quay trở lại.`, 'success');
         return { success: true };
       }
       
-      // Also allow test account if any
+      // Default demo account
       if (cleanPhone === '0905123456' && password === '123456') {
         const loggedUser = {
           fullName: 'Nguyễn Văn Khách',
@@ -105,14 +214,15 @@ export function AuthProvider({ children }) {
         setRole('customer');
         localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedUser));
         closeAuthModal();
+        showToast(`🎉 Đăng nhập thành công với tài khoản Khách Hàng!`, 'success');
         return { success: true };
       }
 
-      return { success: false, message: 'Số điện thoại hoặc mật khẩu chưa chính xác. Vui lòng thử lại hoặc Đăng ký mới.' };
+      return { success: false, message: 'Số điện thoại hoặc mật khẩu chưa chính xác. Vui lòng kiểm tra lại hoặc Đăng ký mới.' };
     }
   };
 
-  // Register with fullName, phoneNumber, password
+  // 3. Normal Register with fullName, phoneNumber, password
   const register = async (fullName, phoneNumber, password) => {
     const cleanPhone = phoneNumber.replace(/[\s.-]/g, '');
     const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
@@ -130,6 +240,7 @@ export function AuthProvider({ children }) {
         setRole('customer');
         localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
         closeAuthModal();
+        showToast(`🎉 Đăng ký thành công! Bạn đã trở thành Khách Hàng (Customer) của CoolCall và có thể đặt thợ ngay!`, 'success');
         return { success: true };
       } else {
         const errData = await res.json();
@@ -164,54 +275,17 @@ export function AuthProvider({ children }) {
       setRole('customer');
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionUser));
       closeAuthModal();
+      showToast(`🎉 Đăng ký thành công! Bạn đã trở thành Khách Hàng (Customer) của CoolCall và có thể đặt thợ ngay!`, 'success');
       return { success: true };
     }
   };
 
-  // Login / Register with Google
-  const loginWithGoogle = async (googleProfile = null) => {
-    // Standard mock/real Google profile
-    const profile = googleProfile || {
-      fullName: 'Khách hàng Google',
-      email: 'khachhang.coolcall@gmail.com',
-      phoneNumber: '0905888999',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-      provider: 'google',
-      role: 'customer'
-    };
-
-    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-
-    try {
-      const res = await fetch(`${apiUrl}/auth/google`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile)
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.user);
-        setRole('customer');
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data.user));
-        closeAuthModal();
-        return { success: true };
-      }
-    } catch {
-      // Fallback
-    }
-
-    setUser(profile);
-    setRole('customer');
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-    closeAuthModal();
-    return { success: true };
-  };
-
-  // Logout back to Guest role
+  // 4. Logout back to Guest role
   const logout = () => {
     setUser(null);
     setRole('guest');
     localStorage.removeItem(STORAGE_KEY);
+    showToast('🔒 Bạn đã đăng xuất và trở về quyền Khách (Guest - Chỉ xem).', 'info');
   };
 
   return (
@@ -224,12 +298,18 @@ export function AuthProvider({ children }) {
         isAuthModalOpen,
         authModalMessage,
         initialAuthTab,
+        googleOtpState,
+        toast,
         openAuthModal,
         closeAuthModal,
+        sendGoogleOtp,
+        verifyGoogleOtp,
+        resendGoogleOtp,
         login,
         register,
-        loginWithGoogle,
-        logout
+        logout,
+        showToast,
+        closeToast
       }}
     >
       {children}

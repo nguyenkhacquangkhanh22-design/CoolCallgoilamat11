@@ -7,8 +7,20 @@ import {
   Clock, 
   ArrowUp
 } from 'lucide-react';
+import { useAuth } from '../context/useAuth';
 
 export default function Footer({ onScrollToTop, onNavigateTo }) {
+  const { isGuest, openAuthModal } = useAuth();
+
+  const handleCall = (e) => {
+    if (isGuest) {
+      e.preventDefault();
+      openAuthModal({
+        tab: 'google',
+        message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để gọi thợ hỗ trợ!'
+      });
+    }
+  };
   const scrollTo = (id) => {
     if (onNavigateTo) {
       onNavigateTo(id);
@@ -63,7 +75,11 @@ export default function Footer({ onScrollToTop, onNavigateTo }) {
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Hotline cứu hộ máy lạnh 24/7</span>
-                <a href="tel:0905888666" className="text-lg font-black text-white hover:text-sky-300 transition-colors">
+                <a 
+                  href="tel:0905888666" 
+                  onClick={handleCall}
+                  className="text-lg font-black text-white hover:text-sky-300 transition-colors"
+                >
                   0905.888.666
                 </a>
               </div>

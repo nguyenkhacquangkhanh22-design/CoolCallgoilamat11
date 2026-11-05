@@ -1,9 +1,21 @@
 import React from 'react';
 import { Phone, Wrench } from 'lucide-react';
+import { useAuth } from '../context/useAuth';
 
 export default function FloatingCTA({ onBookClick, currentSlide = 0 }) {
+  const { isGuest, openAuthModal } = useAuth();
   // If already on booking slide, hide the redundant booking floating button
   const isBookingSlide = currentSlide === 3;
+
+  const handleCall = (e) => {
+    if (isGuest) {
+      e.preventDefault();
+      openAuthModal({
+        tab: 'google',
+        message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để gọi thợ hỗ trợ!'
+      });
+    }
+  };
 
   return (
     <div className="fixed bottom-16 sm:bottom-16 right-3 sm:right-6 z-30 flex flex-col items-end gap-2 pointer-events-none select-none">
@@ -11,8 +23,9 @@ export default function FloatingCTA({ onBookClick, currentSlide = 0 }) {
         {/* Floating Hotline button */}
         <a
           href="tel:0905888666"
+          onClick={handleCall}
           aria-label="Gọi hotline hỗ trợ khẩn cấp"
-          className="group flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-xl shadow-emerald-950/20 hover:scale-105 transition-all duration-200"
+          className="group flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-xl shadow-emerald-950/20 hover:scale-105 transition-all duration-200 cursor-pointer"
         >
           <div className="relative">
             <Phone className="w-4 h-4 animate-bounce text-white" />

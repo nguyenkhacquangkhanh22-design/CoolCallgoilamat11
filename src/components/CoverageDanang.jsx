@@ -1,8 +1,20 @@
 import React from 'react';
 import { MapPin, Navigation, Clock, ArrowUpRight } from 'lucide-react';
 import { DANANG_DISTRICTS } from '../data/coolcallData';
+import { useAuth } from '../context/useAuth';
 
 export default function CoverageDanang({ onSelectDistrict }) {
+  const { isGuest, openAuthModal } = useAuth();
+
+  const handleCall = (e) => {
+    if (isGuest) {
+      e.preventDefault();
+      openAuthModal({
+        tab: 'google',
+        message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để gọi thợ hỗ trợ!'
+      });
+    }
+  };
   return (
     <section id="coverage" className="py-16 sm:py-24 bg-white relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,7 +87,8 @@ export default function CoverageDanang({ onSelectDistrict }) {
             </div>
             <a
               href="tel:0905888666"
-              className="mt-4 w-full py-2.5 px-3 rounded-xl bg-white text-blue-950 font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-blue-50 transition-colors"
+              onClick={handleCall}
+              className="mt-4 w-full py-2.5 px-3 rounded-xl bg-white text-blue-950 font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-blue-50 transition-colors cursor-pointer"
             >
               <span>Gọi 0905.888.666</span>
             </a>

@@ -8,7 +8,9 @@ import {
   ShieldCheck, 
   MapPin, 
   Star, 
-  HelpCircle 
+  HelpCircle,
+  CheckCircle2,
+  X
 } from 'lucide-react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -87,7 +89,7 @@ const SLIDES = [
 ];
 
 function CoolCallApp() {
-  const { isGuest, openAuthModal } = useAuth();
+  const { isGuest, openAuthModal, toast, closeToast } = useAuth();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedDistrictId, setSelectedDistrictId] = useState('hai-chau');
@@ -126,8 +128,8 @@ function CoolCallApp() {
   const handleBookingAction = useCallback(() => {
     if (isGuest) {
       openAuthModal({
-        tab: 'login',
-        message: '🔒 Bạn đang ở quyền Guest (Chỉ xem). Vui lòng Đăng nhập hoặc Đăng ký tài khoản để gọi thợ!'
+        tab: 'google',
+        message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!'
       });
     } else {
       goToSlideById('booking');
@@ -185,12 +187,26 @@ function CoolCallApp() {
     if (searchTerm.trim()) {
       goToSlideById('services');
     } else {
-      goToSlideById('booking');
+      if (isGuest) {
+        openAuthModal({
+          tab: 'google',
+          message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!'
+        });
+      } else {
+        goToSlideById('booking');
+      }
     }
   };
 
   // Quick service shortcut clicked
   const handleQuickService = (serviceId) => {
+    if (isGuest) {
+      openAuthModal({
+        tab: 'google',
+        message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!'
+      });
+      return;
+    }
     const found = SERVICES.find((s) => s.id === serviceId);
     if (found) {
       setSelectedService(found);
@@ -200,12 +216,26 @@ function CoolCallApp() {
 
   // Service card "Đặt gói này" clicked
   const handleSelectServiceFromCard = (service) => {
+    if (isGuest) {
+      openAuthModal({
+        tab: 'google',
+        message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!'
+      });
+      return;
+    }
     setSelectedService(service);
     goToSlideById('booking');
   };
 
   // Pricing table "Đặt thợ" clicked
   const handleSelectPriceItem = (item) => {
+    if (isGuest) {
+      openAuthModal({
+        tab: 'google',
+        message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!'
+      });
+      return;
+    }
     const matchedService = SERVICES.find(
       (s) => s.title.toLowerCase().includes(item.item.toLowerCase().split('(')[0].trim())
     ) || SERVICES[0];
@@ -216,6 +246,13 @@ function CoolCallApp() {
   // District clicked in Coverage section
   const handleSelectDistrict = (districtId) => {
     setSelectedDistrictId(districtId);
+    if (isGuest) {
+      openAuthModal({
+        tab: 'google',
+        message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!'
+      });
+      return;
+    }
     goToSlideById('booking');
   };
 
@@ -384,6 +421,31 @@ function CoolCallApp() {
           booking={bookingSuccessData} 
           onClose={() => setBookingSuccessData(null)} 
         />
+      )}
+
+      {/* Global Toast Notification */}
+      {toast && (
+        <div className="fixed top-20 right-3 sm:right-6 z-50 max-w-md animate-in slide-in-from-top-4 duration-300">
+          <div className={`p-4 rounded-2xl shadow-2xl border text-xs sm:text-sm flex items-start gap-3 ${
+            toast.type === 'success' 
+              ? 'bg-blue-950 text-white border-emerald-400 shadow-emerald-950/20' 
+              : 'bg-slate-900 text-white border-blue-400 shadow-blue-950/20'
+          }`}>
+            <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            </div>
+            <div className="flex-1 text-left font-semibold leading-relaxed">
+              {toast.message}
+            </div>
+            <button 
+              type="button"
+              onClick={closeToast}
+              className="text-white/60 hover:text-white p-1 rounded-md cursor-pointer transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Authentication Modal for Guest to Register / Login */}

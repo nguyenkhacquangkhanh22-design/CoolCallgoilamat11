@@ -143,6 +143,26 @@ export const authController = {
     }
   },
 
+  // POST /api/auth/google-otp (Simulate / Record OTP dispatch)
+  googleOtp(req, res) {
+    try {
+      const { email, fullName, otp } = req.body || {};
+      const cleanEmail = sanitizeString(email || '');
+      const cleanName = sanitizeString(fullName || '');
+
+      return res.status(200).json({
+        success: true,
+        message: `Mã OTP đã gửi về ${cleanEmail}`,
+        email: cleanEmail,
+        fullName: cleanName,
+        otp
+      });
+    } catch (error) {
+      console.error('Google OTP error:', error);
+      return res.status(500).json({ success: false, message: 'Lỗi gửi mã OTP' });
+    }
+  },
+
   // POST /api/auth/google
   googleLogin(req, res) {
     try {
