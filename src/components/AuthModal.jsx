@@ -327,7 +327,7 @@ export default function AuthModal() {
                         type="text"
                         value={googleName}
                         onChange={(e) => setGoogleName(e.target.value)}
-                        placeholder="VD: Nguyễn Khắc Quang Khánh"
+                        placeholder="VD: Nguyễn Văn An"
                         className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-800 focus:bg-white transition-all"
                       />
                     </div>
@@ -345,7 +345,7 @@ export default function AuthModal() {
                         type="email"
                         value={googleEmail}
                         onChange={(e) => setGoogleEmail(e.target.value)}
-                        placeholder="VD: nguyenkhacquangkhanh22@gmail.com"
+                        placeholder="VD: nguyenvana@gmail.com"
                         required
                         className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-800 focus:bg-white transition-all"
                       />
