@@ -141,8 +141,8 @@ export function AuthProvider({ children }) {
     }
 
     const cleanInput = (inputOtp || '').trim();
-    // Accepts the generated OTP or standard 123456
-    const isValid = cleanInput === googleOtpState.otp || cleanInput === '123456';
+    // STRICT: Only accepts the exact random 6-digit OTP sent to the user's Gmail
+    const isValid = cleanInput === googleOtpState.otp;
 
     if (!isValid) {
       return { 

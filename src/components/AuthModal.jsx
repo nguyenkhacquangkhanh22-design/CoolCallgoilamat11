@@ -46,7 +46,6 @@ export default function AuthModal() {
   const [googleStep, setGoogleStep] = useState('input'); // 'input' | 'otp'
   const [otpInput, setOtpInput] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
-  const [showDevHint, setShowDevHint] = useState(false);
 
   // Login form state
   const [loginPhone, setLoginPhone] = useState('');
@@ -482,21 +481,11 @@ export default function AuthModal() {
                     )}
                   </button>
 
-                  {/* Helper for static demo testing */}
+                  {/* Note for checking Gmail */}
                   <div className="pt-1 text-center">
-                    <button
-                      type="button"
-                      onClick={() => setShowDevHint(!showDevHint)}
-                      className="text-[11px] text-slate-400 hover:text-slate-600 underline cursor-pointer"
-                    >
-                      {showDevHint ? 'Ẩn thông tin thử nghiệm' : 'Chưa nhận được thư? Nhấn để xem hướng dẫn'}
-                    </button>
-                    {showDevHint && (
-                      <div className="mt-2 p-2.5 bg-slate-100 rounded-xl text-[11px] text-slate-600 text-left space-y-1">
-                        <p>• Hãy kiểm tra mục <strong>Spam (Thư rác)</strong> trong Gmail của bạn.</p>
-                        <p>• Trong trường hợp thử nghiệm trên GitHub Pages tĩnh (chưa cấu hình API EmailJS), bạn có thể nhập mã dự phòng nhanh: <strong>123456</strong>.</p>
-                      </div>
-                    )}
+                    <p className="text-[11px] text-slate-400">
+                      Chưa nhận được thư? Vui lòng đợi 10 - 20 giây hoặc kiểm tra trong mục <strong>Spam (Thư rác)</strong>.
+                    </p>
                   </div>
                 </form>
               )}
