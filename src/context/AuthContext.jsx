@@ -88,8 +88,8 @@ export function AuthProvider({ children }) {
     setGoogleOtpState(otpData);
 
     // Send real email via EmailJS
-    const emailJsServiceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_654yhqs';
-    const emailJsTemplateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'nz9ov3x';
+    const emailJsServiceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_m9bvt06';
+    const emailJsTemplateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_ib38edo';
     const emailJsPublicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'aEOem-UrLQmXF8sRA';
 
     if (emailJsServiceId && emailJsTemplateId && emailJsPublicKey) {
