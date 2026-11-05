@@ -12,7 +12,8 @@ import {
   LogIn,
   LogOut,
   CheckCircle2,
-  Sparkles
+  Sparkles,
+  UserPlus
 } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
 
@@ -186,16 +187,35 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
             {/* Right Action buttons */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               
-              {/* User Auth Status Pill */}
+              {/* User Auth Status Buttons: Đăng ký & Đăng nhập riêng biệt */}
               {isGuest ? (
-                <button
-                  type="button"
-                  onClick={() => openAuthModal({ tab: 'google', message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' })}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-blue-200 hover:border-blue-400 bg-blue-50/70 hover:bg-blue-100 text-blue-900 font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-xs whitespace-nowrap shrink-0"
-                >
-                  <LogIn className="w-4 h-4 text-blue-700" />
-                  <span>Đăng nhập</span>
-                </button>
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => openAuthModal({ 
+                      tab: 'register', 
+                      message: 'Quý khách vui lòng Đăng ký tài khoản để kích hoạt quyền đặt thợ và gọi thợ!' 
+                    })}
+                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-blue-300 hover:border-blue-400 bg-blue-50/80 hover:bg-blue-100 text-blue-950 font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-xs whitespace-nowrap shrink-0"
+                    title="Đăng ký tài khoản mới"
+                  >
+                    <UserPlus className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-blue-700" />
+                    <span>Đăng ký</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => openAuthModal({ 
+                      tab: 'login', 
+                      message: 'Đăng nhập tài khoản của bạn (đã đăng ký thành công) để đặt thợ hoặc gọi thợ!' 
+                    })}
+                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-slate-200 hover:border-blue-300 bg-white hover:bg-slate-50 text-slate-700 hover:text-blue-950 font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-xs whitespace-nowrap shrink-0"
+                    title="Đăng nhập tài khoản đã có"
+                  >
+                    <LogIn className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-blue-700" />
+                    <span>Đăng nhập</span>
+                  </button>
+                </div>
               ) : (
                 <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-blue-50/90 border border-blue-200 whitespace-nowrap shrink-0">
                   <div className="w-7 h-7 rounded-lg bg-blue-900 text-white flex items-center justify-center font-black text-xs shrink-0">
@@ -335,22 +355,38 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
               </button>
 
               <div className="pt-4 border-t border-slate-100 flex flex-col gap-2">
-                {/* Mobile Auth button */}
+                {/* Mobile Auth buttons: Đăng ký & Đăng nhập riêng biệt */}
                 {isGuest ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      openAuthModal({ 
-                        tab: 'google', 
-                        message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' 
-                      });
-                    }}
-                    className="w-full py-2.5 px-4 rounded-xl bg-blue-100/80 text-blue-950 font-bold flex items-center justify-center gap-2 border border-blue-200 cursor-pointer"
-                  >
-                    <LogIn className="w-4 h-4 text-blue-700" />
-                    <span>Đăng nhập Google / SĐT</span>
-                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        openAuthModal({ 
+                          tab: 'register', 
+                          message: 'Quý khách vui lòng Đăng ký tài khoản để kích hoạt quyền đặt thợ và gọi thợ!' 
+                        });
+                      }}
+                      className="py-2.5 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 border border-blue-200 cursor-pointer shadow-xs"
+                    >
+                      <UserPlus className="w-4 h-4 text-blue-700" />
+                      <span>Đăng ký mới</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        openAuthModal({ 
+                          tab: 'login', 
+                          message: 'Đăng nhập tài khoản của bạn (đã đăng ký thành công) để đặt thợ hoặc gọi thợ!' 
+                        });
+                      }}
+                      className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 border border-slate-200 cursor-pointer shadow-xs"
+                    >
+                      <LogIn className="w-4 h-4 text-blue-700" />
+                      <span>Đăng nhập</span>
+                    </button>
+                  </div>
                 ) : (
                   <div className="p-3 bg-blue-50/80 rounded-xl border border-blue-100 flex items-center justify-between">
                     <div className="text-left">

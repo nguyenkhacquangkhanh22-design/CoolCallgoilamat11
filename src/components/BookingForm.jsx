@@ -14,6 +14,7 @@ import {
   Building,
   Lock,
   UserPlus,
+  LogIn,
   Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
@@ -271,22 +272,30 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
-                      <button
-                        type="button"
-                        onClick={() => openAuthModal({ tab: 'google', message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' })}
-                        className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 text-sky-300" />
-                        <span>Google Gmail</span>
-                      </button>
+                    <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto flex-wrap">
                       <button
                         type="button"
                         onClick={() => openAuthModal({ tab: 'register', message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' })}
-                        className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                        className="flex-1 sm:flex-none px-3.5 py-2.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
                       >
                         <UserPlus className="w-3.5 h-3.5" />
                         <span>Đăng ký mới</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openAuthModal({ tab: 'login', message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' })}
+                        className="flex-1 sm:flex-none px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                      >
+                        <LogIn className="w-3.5 h-3.5 text-blue-700" />
+                        <span>Đăng nhập</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openAuthModal({ tab: 'google', message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!' })}
+                        className="flex-1 sm:flex-none px-3 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-950 border border-blue-200 font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                        <span>Gmail OTP</span>
                       </button>
                     </div>
                   </div>

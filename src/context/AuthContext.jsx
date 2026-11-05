@@ -38,7 +38,7 @@ export function AuthProvider({ children }) {
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMessage, setAuthModalMessage] = useState('');
-  const [initialAuthTab, setInitialAuthTab] = useState('google'); // 'google' | 'login' | 'register'
+  const [initialAuthTab, setInitialAuthTab] = useState('register'); // 'register' | 'login' | 'google'
 
   // Google OTP State
   const [googleOtpState, setGoogleOtpState] = useState(null);
@@ -59,7 +59,7 @@ export function AuthProvider({ children }) {
 
   const openAuthModal = (options = {}) => {
     setAuthModalMessage(options.message || 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!');
-    setInitialAuthTab(options.tab || 'google');
+    setInitialAuthTab(options.tab || 'register');
     setIsAuthModalOpen(true);
   };
 

@@ -15,7 +15,9 @@ import {
   RotateCcw,
   Sparkles,
   ExternalLink,
-  Inbox
+  Inbox,
+  UserPlus,
+  LogIn
 } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
 
@@ -33,11 +35,11 @@ export default function AuthModal() {
     register
   } = useAuth();
 
-  const [activeTab, setActiveTab] = useState(initialAuthTab || 'google');
+  const [activeTab, setActiveTab] = useState(initialAuthTab || 'register');
   const [prevTab, setPrevTab] = useState(initialAuthTab);
   if (initialAuthTab !== prevTab) {
     setPrevTab(initialAuthTab);
-    setActiveTab(initialAuthTab || 'google');
+    setActiveTab(initialAuthTab || 'register');
   }
 
   // Google Login State
@@ -219,30 +221,56 @@ export default function AuthModal() {
           </div>
 
           <h3 className="text-xl sm:text-2xl font-black text-white">
-            {activeTab === 'google' 
-              ? 'Đăng Nhập Google (Gmail OTP)' 
+            {activeTab === 'register' 
+              ? 'Đăng Ký Tài Khoản Mới' 
               : activeTab === 'login' 
-              ? 'Đăng Nhập Bằng Số Điện Thoại' 
-              : 'Đăng Ký Tài Khoản Mới'}
+              ? 'Đăng Nhập Tài Khoản' 
+              : 'Đăng Ký / Đăng Nhập Qua Gmail OTP'}
           </h3>
 
           <p className="text-xs text-blue-200 mt-1 leading-relaxed">
-            {authModalMessage || 'Quý khách cần đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ.'}
+            {authModalMessage || 'Quý khách vui lòng đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ.'}
           </p>
         </div>
 
         {/* Modal Body Scrollable */}
         <div className="p-5 sm:p-6 space-y-4 overflow-y-auto">
           
-          {/* Tab Selector: 3 options */}
+          {/* Tab Selector: 3 options with clear Register vs Login distinction */}
           <div className="grid grid-cols-3 gap-1 rounded-2xl bg-slate-100 p-1 select-none">
+            <button
+              type="button"
+              onClick={() => { setActiveTab('register'); setErrorMsg(''); setSuccessMsg(''); }}
+              className={`py-2 px-1 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                activeTab === 'register'
+                  ? 'bg-blue-900 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+              }`}
+            >
+              <UserPlus className="w-3.5 h-3.5 shrink-0" />
+              <span>Đăng ký mới</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => { setActiveTab('login'); setErrorMsg(''); setSuccessMsg(''); }}
+              className={`py-2 px-1 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                activeTab === 'login'
+                  ? 'bg-blue-900 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+              }`}
+            >
+              <LogIn className="w-3.5 h-3.5 shrink-0" />
+              <span>Đăng nhập</span>
+            </button>
+
             <button
               type="button"
               onClick={() => { setActiveTab('google'); setErrorMsg(''); setSuccessMsg(''); }}
               className={`py-2 px-1 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                 activeTab === 'google'
-                  ? 'bg-white text-blue-950 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white text-blue-950 shadow-sm border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
               }`}
             >
               <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
@@ -251,31 +279,7 @@ export default function AuthModal() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
               </svg>
-              <span>Google Gmail</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => { setActiveTab('login'); setErrorMsg(''); setSuccessMsg(''); }}
-              className={`py-2 px-1 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-                activeTab === 'login'
-                  ? 'bg-white text-blue-950 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Đăng nhập SĐT
-            </button>
-
-            <button
-              type="button"
-              onClick={() => { setActiveTab('register'); setErrorMsg(''); setSuccessMsg(''); }}
-              className={`py-2 px-1 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-                activeTab === 'register'
-                  ? 'bg-white text-blue-950 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Đăng ký mới
+              <span>Gmail OTP</span>
             </button>
           </div>
 
@@ -490,6 +494,26 @@ export default function AuthModal() {
                 </form>
               )}
 
+              {/* Chuyển đổi sang Đăng ký / Đăng nhập bằng SĐT */}
+              <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-600">
+                <span>Dùng số điện thoại:</span>
+                <button
+                  type="button"
+                  onClick={() => { setActiveTab('register'); setErrorMsg(''); setSuccessMsg(''); }}
+                  className="font-bold text-blue-900 hover:underline cursor-pointer"
+                >
+                  Đăng ký tài khoản
+                </button>
+                <span className="text-slate-300">•</span>
+                <button
+                  type="button"
+                  onClick={() => { setActiveTab('login'); setErrorMsg(''); setSuccessMsg(''); }}
+                  className="font-bold text-slate-800 hover:underline cursor-pointer"
+                >
+                  Đăng nhập tài khoản
+                </button>
+              </div>
+
             </div>
           )}
 
@@ -555,6 +579,31 @@ export default function AuthModal() {
                   </>
                 )}
               </button>
+
+              {/* Chuyển đổi sang Đăng ký nếu chưa có tài khoản */}
+              <div className="pt-3 border-t border-slate-100 flex flex-col gap-2 text-center text-xs text-slate-600">
+                <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                  <span>Chưa có tài khoản?</span>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab('register'); setErrorMsg(''); setSuccessMsg(''); }}
+                    className="font-bold text-blue-900 hover:text-blue-700 hover:underline cursor-pointer"
+                  >
+                    Đăng ký tài khoản mới ngay
+                  </button>
+                </div>
+                <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                  <span>Hoặc:</span>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab('google'); setErrorMsg(''); setSuccessMsg(''); }}
+                    className="font-semibold text-emerald-700 hover:text-emerald-800 hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    <Sparkles className="w-3 h-3 text-emerald-600" />
+                    Đăng nhập nhanh bằng Gmail OTP (Không cần nhớ mật khẩu)
+                  </button>
+                </div>
+              </div>
             </form>
           )}
 
@@ -656,6 +705,31 @@ export default function AuthModal() {
                   </>
                 )}
               </button>
+
+              {/* Chuyển đổi sang Đăng nhập nếu đã có tài khoản */}
+              <div className="pt-3 border-t border-slate-100 flex flex-col gap-2 text-center text-xs text-slate-600">
+                <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                  <span>Đã có tài khoản rồi?</span>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab('login'); setErrorMsg(''); setSuccessMsg(''); }}
+                    className="font-bold text-blue-900 hover:text-blue-700 hover:underline cursor-pointer"
+                  >
+                    Đăng nhập ngay
+                  </button>
+                </div>
+                <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                  <span>Hoặc:</span>
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab('google'); setErrorMsg(''); setSuccessMsg(''); }}
+                    className="font-semibold text-emerald-700 hover:text-emerald-800 hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    <Sparkles className="w-3 h-3 text-emerald-600" />
+                    Đăng ký nhanh bằng Gmail OTP (Nhận mã 6 số về Gmail)
+                  </button>
+                </div>
+              </div>
             </form>
           )}
 
