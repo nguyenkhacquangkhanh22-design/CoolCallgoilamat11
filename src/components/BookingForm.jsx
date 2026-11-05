@@ -11,8 +11,12 @@ import {
   ChevronDown, 
   Percent, 
   Send, 
-  Building 
+  Building,
+  Lock,
+  LogIn,
+  UserPlus
 } from 'lucide-react';
+import { useAuth } from '../context/useAuth';
 import { DANANG_DISTRICTS, SERVICES, AC_TYPES, AC_BRANDS, COMMON_ISSUES } from '../data/coolcallData';
 
 // Helper to format local date string (YYYY-MM-DD)
@@ -35,12 +39,14 @@ const TIME_SLOTS = [
 ];
 
 export default function BookingForm({ selectedServiceFromParent, initialDistrict = 'hai-chau', onBookingSubmit }) {
+  const { user, isGuest, openAuthModal } = useAuth();
+
   const [todayStr] = useState(() => getLocalDateString(0));
   const [maxDateStr] = useState(() => getLocalDateString(60));
   const [currentHour] = useState(() => new Date().getHours());
 
-  const [fullName, setFullName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [fullName, setFullName] = useState(user?.fullName || '');
+  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || '');
   const [district, setDistrict] = useState(initialDistrict);
   const [addressDetail, setAddressDetail] = useState('');
   const [serviceId, setServiceId] = useState('vesinh-treotuong');
@@ -48,6 +54,14 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
   const [acBrand, setAcBrand] = useState('Daikin');
   const [acQuantity, setAcQuantity] = useState(1);
   const [issueDescription, setIssueDescription] = useState('');
+
+  // Auto-fill user credentials when user logs in
+  const [prevUser, setPrevUser] = useState(user);
+  if (user !== prevUser) {
+    setPrevUser(user);
+    if (user?.fullName) setFullName(user.fullName);
+    if (user?.phoneNumber) setPhoneNumber(user.phoneNumber);
+  }
   const [scheduleType, setScheduleType] = useState('urgent'); // 'urgent' | 'scheduled'
 
   // If after 20:00, default scheduled date to tomorrow
@@ -142,6 +156,16 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // ROLE CHECK: Guest cannot call or book technician
+    if (isGuest) {
+      openAuthModal({
+        tab: 'login',
+        message: '🔒 Bạn đang ở quyền Khách (Guest - Chỉ xem). Vui lòng Đăng nhập hoặc Đăng ký tài khoản để gọi thợ đặt lịch!'
+      });
+      return;
+    }
+
     if (!validate()) return;
 
     setIsSubmitting(true);
@@ -229,6 +253,63 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
             {/* Left 8 columns: Form inputs */}
             <div className="lg:col-span-8 space-y-6 text-left">
               
+              {/* Role Indicator Banner */}
+              {isGuest ? (
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-5 shadow-sm text-left">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                        <Lock className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-extrabold text-amber-950 text-base">Quyền truy cập: Khách (Guest)</h4>
+                          <span className="px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 text-[10px] font-black uppercase">Chỉ xem</span>
+                        </div>
+                        <p className="text-xs text-amber-800 mt-1 leading-relaxed">
+                          Bạn hiện đang ở quyền Guest nên <strong>chưa thể gọi thợ hoặc đặt lịch</strong>. Vui lòng đăng nhập hoặc tạo tài khoản mới (Google hoặc SĐT) để kích hoạt quyền gọi thợ.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                      <button
+                        type="button"
+                        onClick={() => openAuthModal({ tab: 'login', message: 'Đăng nhập tài khoản để đặt thợ sửa máy lạnh!' })}
+                        className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <LogIn className="w-3.5 h-3.5 text-sky-300" />
+                        <span>Đăng nhập</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openAuthModal({ tab: 'register', message: 'Đăng ký tài khoản nhanh để kích hoạt quyền gọi thợ!' })}
+                        className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <UserPlus className="w-3.5 h-3.5" />
+                        <span>Đăng ký</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-left flex items-center justify-between gap-3 animate-in fade-in">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-5 h-5" />
+                    </div>
+                    <div className="text-xs">
+                      <div className="font-bold text-emerald-950 text-sm">
+                        Tài khoản đã xác thực: <span className="text-blue-900 font-extrabold">{user?.fullName}</span>
+                      </div>
+                      <span className="text-emerald-700">Đã mở khóa quyền gọi thợ và đặt lịch tận nhà tại Đà Nẵng</span>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold shrink-0">
+                    Được phép đặt lịch
+                  </span>
+                </div>
+              )}
+
               {/* Section 1: Customer Contact info */}
               <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs">
                 <h3 className="text-base font-bold text-blue-950 mb-4 flex items-center gap-2">
@@ -707,12 +788,21 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full mt-4 py-4 px-6 rounded-2xl bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white font-bold text-base shadow-xl shadow-blue-900/25 hover:shadow-2xl hover:shadow-blue-900/35 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed group"
+                  className={`w-full mt-4 py-4 px-6 rounded-2xl font-bold text-base shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed group ${
+                    isGuest 
+                      ? 'bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white shadow-amber-900/20'
+                      : 'bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white shadow-blue-900/25 hover:shadow-2xl'
+                  }`}
                 >
                   {isSubmitting ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       <span>Đang kết nối thợ...</span>
+                    </>
+                  ) : isGuest ? (
+                    <>
+                      <Lock className="w-5 h-5 text-amber-200" />
+                      <span>🔒 Đăng nhập để gọi thợ đặt lịch</span>
                     </>
                   ) : (
                     <>

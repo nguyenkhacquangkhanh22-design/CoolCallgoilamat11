@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 
 import bookingRoutes from './routes/bookingRoutes.js';
 import serviceRoutes from './routes/serviceRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,6 +70,7 @@ const bookingLimiter = rateLimit({
 });
 
 // 5. API Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingLimiter, bookingRoutes);
 app.use('/api/services', serviceRoutes);
 

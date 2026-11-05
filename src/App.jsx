@@ -24,6 +24,9 @@ import BookingSuccessModal from './components/BookingSuccessModal';
 import FloatingCTA from './components/FloatingCTA';
 import Footer from './components/Footer';
 import { SlideTabs, SideSlideArrows, SlideBottomBar } from './components/SlideNavigation';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/useAuth';
+import AuthModal from './components/AuthModal';
 import { SERVICES } from './data/coolcallData';
 
 const SLIDES = [
@@ -83,7 +86,8 @@ const SLIDES = [
   },
 ];
 
-export default function App() {
+function CoolCallApp() {
+  const { isGuest, openAuthModal } = useAuth();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedDistrictId, setSelectedDistrictId] = useState('hai-chau');
@@ -117,6 +121,18 @@ export default function App() {
       goToSlide(foundIndex);
     }
   }, [goToSlide]);
+
+  // Handle booking action: Guests are prompted to login/register, customers go to form
+  const handleBookingAction = useCallback(() => {
+    if (isGuest) {
+      openAuthModal({
+        tab: 'login',
+        message: '🔒 Bạn đang ở quyền Guest (Chỉ xem). Vui lòng Đăng nhập hoặc Đăng ký tài khoản để gọi thợ!'
+      });
+    } else {
+      goToSlideById('booking');
+    }
+  }, [isGuest, openAuthModal, goToSlideById]);
 
   // Handle native swipe / scroll inside horizontal snap container
   const handleScroll = (e) => {
@@ -214,7 +230,7 @@ export default function App() {
       <Header 
         activeSlideId={SLIDES[currentSlide]?.id}
         onNavigateTo={goToSlideById}
-        onBookNowClick={() => goToSlideById('booking')}
+        onBookNowClick={handleBookingAction}
       />
 
       {/* 2. Top Interactive Slide Tabs */}
@@ -353,13 +369,13 @@ export default function App() {
         slides={SLIDES}
         currentSlide={currentSlide}
         onGoToSlide={goToSlide}
-        onBookNow={() => goToSlideById('booking')}
+        onBookNow={handleBookingAction}
       />
 
       {/* Quick Floating Hotline / Action Button */}
       <FloatingCTA 
         currentSlide={currentSlide}
-        onBookClick={() => goToSlideById('booking')} 
+        onBookClick={handleBookingAction} 
       />
 
       {/* Booking Success Modal Popup */}
@@ -369,6 +385,17 @@ export default function App() {
           onClose={() => setBookingSuccessData(null)} 
         />
       )}
+
+      {/* Authentication Modal for Guest to Register / Login */}
+      <AuthModal />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <CoolCallApp />
+    </AuthProvider>
   );
 }

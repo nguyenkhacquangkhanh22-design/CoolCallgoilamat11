@@ -8,10 +8,15 @@ import {
   Snowflake, 
   Wrench, 
   ShieldCheck, 
-  ChevronRight
+  ChevronRight,
+  LogIn,
+  LogOut,
+  CheckCircle2
 } from 'lucide-react';
+import { useAuth } from '../context/useAuth';
 
 export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavigateTo }) {
+  const { user, isGuest, openAuthModal, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -161,10 +166,42 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
             </nav>
 
             {/* Right Action buttons */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              {/* User Auth Status Pill */}
+              {isGuest ? (
+                <button
+                  type="button"
+                  onClick={() => openAuthModal({ tab: 'login', message: 'Đăng nhập hoặc Đăng ký để kích hoạt quyền gọi thợ!' })}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-blue-200 hover:border-blue-400 bg-blue-50/70 hover:bg-blue-100 text-blue-900 font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-xs"
+                >
+                  <LogIn className="w-4 h-4 text-blue-700" />
+                  <span>Đăng nhập</span>
+                </button>
+              ) : (
+                <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-blue-50/90 border border-blue-200">
+                  <div className="w-7 h-7 rounded-lg bg-blue-900 text-white flex items-center justify-center font-black text-xs">
+                    {user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  <div className="hidden sm:block text-left text-xs">
+                    <span className="block font-bold text-blue-950 truncate max-w-[110px]">{user?.fullName}</span>
+                    <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-0.5">
+                      <CheckCircle2 className="w-2.5 h-2.5" /> Thành viên
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={logout}
+                    title="Đăng xuất"
+                    className="p-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
               <a
                 href="tel:0905888666"
-                className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-blue-200 bg-blue-50/60 hover:bg-blue-100/80 text-blue-900 font-semibold text-sm transition-all shadow-xs"
+                className="hidden xl:flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-blue-200 bg-blue-50/60 hover:bg-blue-100/80 text-blue-900 font-semibold text-sm transition-all shadow-xs"
               >
                 <div className="w-8 h-8 rounded-lg bg-blue-900 text-white flex items-center justify-center">
                   <Phone className="w-4 h-4" />
@@ -176,8 +213,14 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
               </a>
 
               <button
-                onClick={onBookNowClick}
-                className="relative inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white font-bold text-sm shadow-md shadow-blue-900/20 hover:shadow-lg hover:shadow-blue-900/30 transition-all cursor-pointer transform hover:-translate-y-0.5"
+                onClick={() => {
+                  if (isGuest) {
+                    openAuthModal({ tab: 'login', message: '🔒 Bạn đang ở quyền Guest. Vui lòng đăng nhập hoặc đăng ký tài khoản để gọi thợ!' });
+                  } else {
+                    onBookNowClick();
+                  }
+                }}
+                className="relative inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-900/20 hover:shadow-lg hover:shadow-blue-900/30 transition-all cursor-pointer transform hover:-translate-y-0.5"
               >
                 <span className="relative z-10 flex items-center gap-1.5">
                   <Wrench className="w-4 h-4 text-sky-300" />
@@ -260,6 +303,38 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
               </button>
 
               <div className="pt-4 border-t border-slate-100 flex flex-col gap-2">
+                {/* Mobile Auth button */}
+                {isGuest ? (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      openAuthModal({ tab: 'login', message: 'Đăng nhập hoặc Đăng ký để kích hoạt quyền gọi thợ!' });
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl bg-blue-100/80 text-blue-950 font-bold flex items-center justify-center gap-2 border border-blue-200"
+                  >
+                    <LogIn className="w-4 h-4 text-blue-700" />
+                    <span>Đăng nhập / Đăng ký tài khoản</span>
+                  </button>
+                ) : (
+                  <div className="p-3 bg-blue-50/80 rounded-xl border border-blue-100 flex items-center justify-between">
+                    <div className="text-left">
+                      <span className="text-[11px] text-slate-500 block">Tài khoản thành viên:</span>
+                      <strong className="text-sm text-blue-950">{user?.fullName}</strong>
+                      <span className="text-[10px] text-emerald-600 font-semibold block">Đã mở khóa quyền gọi thợ</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        logout();
+                      }}
+                      className="px-3 py-1.5 rounded-lg bg-white border border-rose-200 text-rose-600 font-bold text-xs flex items-center gap-1 shadow-xs"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Đăng xuất</span>
+                    </button>
+                  </div>
+                )}
+
                 <a
                   href="tel:0905888666"
                   className="w-full py-3 px-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 font-bold flex items-center justify-center gap-2"
@@ -268,7 +343,14 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                   Gọi tổng đài: 0905.888.666
                 </a>
                 <button
-                  onClick={onBookNowClick}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (isGuest) {
+                      openAuthModal({ tab: 'login', message: '🔒 Bạn đang ở quyền Guest. Vui lòng đăng nhập hoặc đăng ký tài khoản để gọi thợ!' });
+                    } else {
+                      onBookNowClick();
+                    }
+                  }}
                   className="w-full py-3 px-4 rounded-xl bg-blue-900 text-white font-bold flex items-center justify-center gap-2 shadow-md shadow-blue-900/20"
                 >
                   <Wrench className="w-4 h-4 text-sky-300" />
