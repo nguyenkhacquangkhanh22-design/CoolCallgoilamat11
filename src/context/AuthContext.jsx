@@ -87,10 +87,10 @@ export function AuthProvider({ children }) {
 
     setGoogleOtpState(otpData);
 
-    // Send real email via EmailJS if configured in environment
-    const emailJsServiceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const emailJsTemplateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const emailJsPublicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+    // Send real email via EmailJS
+    const emailJsServiceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_654yhqs';
+    const emailJsTemplateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'nz9ov3x';
+    const emailJsPublicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'aEOem-UrLQmXF8sRA';
 
     if (emailJsServiceId && emailJsTemplateId && emailJsPublicKey) {
       try {
@@ -105,6 +105,7 @@ export function AuthProvider({ children }) {
           },
           emailJsPublicKey
         );
+        console.info('EmailJS OTP email successfully dispatched to:', cleanEmail);
       } catch (err) {
         console.warn('EmailJS service warning:', err);
       }
