@@ -13,7 +13,9 @@ import {
   Mail,
   KeyRound,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  ExternalLink,
+  Inbox
 } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
 
@@ -44,6 +46,7 @@ export default function AuthModal() {
   const [googleStep, setGoogleStep] = useState('input'); // 'input' | 'otp'
   const [otpInput, setOtpInput] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [showDevHint, setShowDevHint] = useState(false);
 
   // Login form state
   const [loginPhone, setLoginPhone] = useState('');
@@ -86,7 +89,7 @@ export default function AuthModal() {
 
     if (result.success) {
       setGoogleStep('otp');
-      setSuccessMsg(`Mã xác thực đã được gửi về Gmail: ${result.email}`);
+      setSuccessMsg(`Đã gửi mã xác thực về Gmail: ${result.email}`);
       setResendCooldown(60);
       const timer = setInterval(() => {
         setResendCooldown((prev) => {
@@ -129,7 +132,7 @@ export default function AuthModal() {
     const result = await resendGoogleOtp();
     setIsSubmitting(false);
     if (result.success) {
-      setSuccessMsg('Đã gửi mã xác thực mới vào hộp thư Gmail của bạn!');
+      setSuccessMsg('Đã gửi lại mã xác thực mới vào hộp thư Gmail của bạn!');
       setResendCooldown(60);
     } else {
       setErrorMsg(result.message || 'Lỗi gửi lại mã');
@@ -305,10 +308,10 @@ export default function AuthModal() {
                   <div className="p-3.5 rounded-2xl bg-blue-50/80 border border-blue-200/80 text-xs text-blue-950">
                     <p className="font-bold flex items-center gap-1.5 mb-1">
                       <Sparkles className="w-4 h-4 text-sky-600" />
-                      Xác thực Google cá nhân 2 bước
+                      Xác thực Google cá nhân qua Gmail
                     </p>
                     <p className="text-slate-600 leading-relaxed">
-                      Nhập địa chỉ Gmail cá nhân của bạn. Hệ thống CoolCall sẽ gửi mã xác thực OTP 6 số về hộp thư Gmail để xác minh và nâng cấp quyền thành <strong>Khách Hàng (Customer)</strong>.
+                      Nhập địa chỉ Gmail cá nhân của bạn. Hệ thống CoolCall sẽ gửi mã xác thực bảo mật 6 số về hộp thư Gmail của bạn để xác minh và nâng cấp quyền thành <strong>Khách Hàng (Customer)</strong>.
                     </p>
                   </div>
 
@@ -332,7 +335,7 @@ export default function AuthModal() {
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Địa chỉ Gmail cá nhân <span className="text-rose-500">*</span>
+                      Địa chỉ Gmail cá nhân của bạn <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -342,13 +345,13 @@ export default function AuthModal() {
                         type="email"
                         value={googleEmail}
                         onChange={(e) => setGoogleEmail(e.target.value)}
-                        placeholder="VD: quangkhanh22@gmail.com"
+                        placeholder="VD: nguyenkhacquangkhanh22@gmail.com"
                         required
                         className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-800 focus:bg-white transition-all"
                       />
                     </div>
                     <span className="text-[11px] text-slate-500 mt-1 block">
-                      Mã xác thực OTP bảo mật 6 số sẽ được gửi về hộp thư Gmail này.
+                      Mã xác thực OTP gồm 6 chữ số sẽ được gửi về hộp thư Gmail này.
                     </span>
                   </div>
 
@@ -374,56 +377,54 @@ export default function AuthModal() {
                   </button>
                 </form>
               ) : (
-                /* Step 2: Input OTP & Simulated Gmail Notification Box */
+                /* Step 2: Input OTP sent to Customer's Real Gmail */
                 <form onSubmit={handleGoogleVerifyOtp} className="space-y-4">
                   
-                  {/* SIMULATED GMAIL NOTIFICATION BOX */}
-                  {googleOtpState && (
-                    <div className="rounded-2xl border-2 border-emerald-400/80 bg-gradient-to-b from-emerald-50/60 to-white p-4 shadow-md text-left space-y-3">
-                      <div className="flex items-center justify-between border-b border-emerald-200/60 pb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-                          <span className="text-xs font-black text-emerald-900 uppercase tracking-wide flex items-center gap-1">
-                            📬 Hộp Thư Gmail Cá Nhân (Mô Phỏng Hộp Thư Đến)
-                          </span>
-                        </div>
-                        <span className="text-[10px] font-mono text-slate-500">{googleOtpState.sentAt}</span>
+                  {/* REAL GMAIL INSTRUCTION CARD (NO CODE REVEALED ON SCREEN) */}
+                  <div className="rounded-2xl border border-blue-200 bg-gradient-to-b from-blue-50/80 to-white p-4 text-left space-y-3 shadow-xs">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-xl bg-blue-900 text-white flex items-center justify-center shrink-0 shadow-xs">
+                        <Mail className="w-5 h-5 text-sky-300" />
                       </div>
-
-                      <div className="text-xs text-slate-700 space-y-1">
-                        <p><strong>Người gửi:</strong> CoolCall Security &lt;security-noreply@coolcall.danang.vn&gt;</p>
-                        <p><strong>Gửi đến:</strong> <span className="text-blue-900 font-semibold">{googleOtpState.email}</span></p>
-                        <p><strong>Tiêu đề:</strong> [CoolCall] Mã xác thực liên kết tài khoản Google</p>
+                      <div>
+                        <span className="text-xs font-bold text-blue-950 block">
+                          Đã gửi mã xác thực về hòm thư Gmail!
+                        </span>
+                        <span className="text-xs font-black text-blue-800 bg-blue-100/80 px-2 py-0.5 rounded-md inline-block mt-0.5">
+                          {googleOtpState?.email}
+                        </span>
                       </div>
-
-                      <div className="p-3 rounded-xl bg-white border border-emerald-300 shadow-inner text-center">
-                        <p className="text-xs text-slate-600 mb-1">
-                          Kính gửi <strong>{googleOtpState.fullName}</strong>, mã OTP kích hoạt tài khoản của bạn là:
-                        </p>
-                        <div className="text-3xl font-black font-mono tracking-widest text-blue-950 py-1">
-                          {googleOtpState.otp}
-                        </div>
-                        <p className="text-[10px] text-slate-400">
-                          (Mã có hiệu lực trong 5 phút. Vui lòng không chia sẻ mã này)
-                        </p>
-                      </div>
-
-                      {/* 1-Click Auto Fill Button for Instant Verification */}
-                      <button
-                        type="button"
-                        onClick={() => setOtpInput(googleOtpState.otp)}
-                        className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
-                      >
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Bấm vào đây để tự động điền mã {googleOtpState.otp}</span>
-                      </button>
                     </div>
-                  )}
+
+                    <div className="text-xs text-slate-600 leading-relaxed bg-white p-3 rounded-xl border border-slate-200/80 space-y-1.5">
+                      <p className="font-semibold text-slate-800 flex items-center gap-1.5">
+                        <Inbox className="w-3.5 h-3.5 text-blue-700" />
+                        Hướng dẫn lấy mã xác thực:
+                      </p>
+                      <ol className="list-decimal pl-4 space-y-1 text-slate-600">
+                        <li>Mở ứng dụng <strong>Gmail</strong> trên điện thoại hoặc máy tính của bạn.</li>
+                        <li>Kiểm tra mục <strong>Hộp thư đến (Inbox)</strong> hoặc thư mục <strong>Spam / Thư rác</strong>.</li>
+                        <li>Tìm thư từ <strong>CoolCall Security</strong> để lấy mã xác thực gồm 6 chữ số và nhập vào ô bên dưới.</li>
+                      </ol>
+                    </div>
+
+                    {/* Direct link to open Gmail in new tab */}
+                    <a
+                      href="https://mail.google.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-2.5 px-4 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
+                    >
+                      <Mail className="w-4 h-4 text-sky-300" />
+                      <span>Mở hộp thư Gmail (mail.google.com)</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-sky-200" />
+                    </a>
+                  </div>
 
                   {/* OTP Input Field */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Nhập mã xác thực 6 số <span className="text-rose-500">*</span>
+                      Nhập mã xác thực 6 số từ Gmail <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -480,6 +481,23 @@ export default function AuthModal() {
                       </>
                     )}
                   </button>
+
+                  {/* Helper for static demo testing */}
+                  <div className="pt-1 text-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowDevHint(!showDevHint)}
+                      className="text-[11px] text-slate-400 hover:text-slate-600 underline cursor-pointer"
+                    >
+                      {showDevHint ? 'Ẩn thông tin thử nghiệm' : 'Chưa nhận được thư? Nhấn để xem hướng dẫn'}
+                    </button>
+                    {showDevHint && (
+                      <div className="mt-2 p-2.5 bg-slate-100 rounded-xl text-[11px] text-slate-600 text-left space-y-1">
+                        <p>• Hãy kiểm tra mục <strong>Spam (Thư rác)</strong> trong Gmail của bạn.</p>
+                        <p>• Trong trường hợp thử nghiệm trên GitHub Pages tĩnh (chưa cấu hình API EmailJS), bạn có thể nhập mã dự phòng nhanh: <strong>123456</strong>.</p>
+                      </div>
+                    )}
+                  </div>
                 </form>
               )}
 
