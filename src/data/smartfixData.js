@@ -1,4 +1,4 @@
-// CoolCall Data: Services, Danang Districts, Pricing, Reviews, FAQs
+// SmartFix Data: Services, Danang Districts, Pricing, Reviews, FAQs
 
 export const DANANG_DISTRICTS = [
   { id: 'hai-chau', name: 'Quận Hải Châu', hubs: ['Nguyễn Văn Linh', 'Bạch Đằng', 'Lê Duẩn', 'Trưng Nữ Vương'], activeTechs: 5, estTime: '15-20 phút' },
@@ -239,7 +239,7 @@ export const REVIEWS = [
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
     service: 'Vệ sinh 2 máy lạnh Inverter Daikin',
     date: '2 ngày trước',
-    comment: 'Gọi CoolCall lúc 13h30 trời nóng gay gắt, đúng 25 phút sau anh thợ tên Hùng đã có mặt mang đầy đủ máy móc xịt rửa, bạt che cẩn thận không để văng một giọt nước nào ra sàn gỗ. Máy sau khi rửa mát lạnh sâu buốt!'
+    comment: 'Gọi SmartFix lúc 13h30 trời nóng gay gắt, đúng 25 phút sau anh thợ tên Hùng đã có mặt mang đầy đủ máy móc xịt rửa, bạt che cẩn thận không để văng một giọt nước nào ra sàn gỗ. Máy sau khi rửa mát lạnh sâu buốt!'
   },
   {
     id: 2,
@@ -249,7 +249,7 @@ export const REVIEWS = [
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
     service: 'Sửa máy lạnh chảy nước & Bơm gas',
     date: '3 ngày trước',
-    comment: 'Máy lạnh phòng ngủ bị chảy nước ròng ròng làm ướt hết nệm. Đặt lịch trên web CoolCall rất tiện, thợ báo giá trước 180k đúng y niêm yết, thông ống thoát nước và cân chỉnh lại máng là xong ngay. Rất hài lòng!'
+    comment: 'Máy lạnh phòng ngủ bị chảy nước ròng ròng làm ướt hết nệm. Đặt lịch trên web SmartFix rất tiện, thợ báo giá trước 180k đúng y niêm yết, thông ống thoát nước và cân chỉnh lại máng là xong ngay. Rất hài lòng!'
   },
   {
     id: 3,
@@ -259,7 +259,7 @@ export const REVIEWS = [
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
     service: 'Bảo dưỡng định kỳ 6 máy lạnh phòng khách',
     date: '1 tuần trước',
-    comment: 'Homestay gần biển nên máy lạnh hay bị bám bụi và rỉ sét. Đội ngũ CoolCall làm việc rất chuyên nghiệp, có hóa đơn điện tử và bảo hành đàng hoàng. Giá giảm 10% khi làm từ máy thứ 2 trở lên.'
+    comment: 'Homestay gần biển nên máy lạnh hay bị bám bụi và rỉ sét. Đội ngũ SmartFix làm việc rất chuyên nghiệp, có hóa đơn điện tử và bảo hành đàng hoàng. Giá giảm 10% khi làm từ máy thứ 2 trở lên.'
   },
   {
     id: 4,
@@ -269,7 +269,7 @@ export const REVIEWS = [
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80',
     service: 'Sửa lỗi bo mạch máy lạnh Panasonic chớp đèn H11',
     date: 'Hôm qua',
-    comment: 'Kêu thợ khác họ phán thay máy mới tốn mấy triệu, may mắn gọi bên CoolCall gặp anh thợ lành nghề kiểm tra sửa lại giắc tín hiệu bo mạch chỉ hết 250k. Thợ trung thực, có tâm, sẽ ủng hộ dài lâu!'
+    comment: 'Kêu thợ khác họ phán thay máy mới tốn mấy triệu, may mắn gọi bên SmartFix gặp anh thợ lành nghề kiểm tra sửa lại giắc tín hiệu bo mạch chỉ hết 250k. Thợ trung thực, có tâm, sẽ ủng hộ dài lâu!'
   }
 ];
 
@@ -293,20 +293,20 @@ export const FAQS = [
     a: 'Đối với hộ gia đình, nên vệ sinh 3 - 4 tháng/lần nếu sử dụng hàng ngày, hoặc 6 tháng/lần nếu ít dùng. Đối với văn phòng, nhà hàng, quán ăn hoặc nơi gần đường nhiều bụi tại Đà Nẵng, nên bảo dưỡng định kỳ 2 - 3 tháng/lần để máy làm lạnh sâu, tiết kiệm điện và tránh nấm mốc gây bệnh hô hấp.'
   },
   {
-    q: 'Thợ CoolCall có mặt sau bao nhiêu phút từ khi đặt lịch?',
-    a: 'CoolCall bố trí các đội thợ cơ động túc trực thường xuyên tại các trạm quận Hải Châu, Thanh Khê, Sơn Trà, Ngũ Hành Sơn, Cẩm Lệ và Liên Chiểu. Nếu quý khách chọn chế độ "Cần thợ gấp", thợ kỹ thuật gần nhất sẽ gọi xác nhận và có mặt tận nhà trong vòng 20 - 30 phút.'
+    q: 'Thợ SmartFix có mặt sau bao nhiêu phút từ khi đặt lịch?',
+    a: 'SmartFix bố trí các đội thợ cơ động túc trực thường xuyên tại các trạm quận Hải Châu, Thanh Khê, Sơn Trà, Ngũ Hành Sơn, Cẩm Lệ và Liên Chiểu. Nếu quý khách chọn chế độ "Cần thợ gấp", thợ kỹ thuật gần nhất sẽ gọi xác nhận và có mặt tận nhà trong vòng 20 - 30 phút.'
   },
   {
     q: 'Nếu thợ đến kiểm tra nhưng tôi chưa muốn sửa thì có tốn phí không?',
-    a: 'CoolCall miễn phí 100% chi phí kiểm tra và tư vấn nếu quý khách tiến hành sửa chữa. Trường hợp thợ đã đến tận nơi, tháo kiểm tra chi tiết và báo đúng giá niêm yết nhưng quý khách đổi ý chưa sửa, chúng tôi chỉ xin phép thu phí hỗ trợ xăng xe kiểm tra tượng trưng 50.000đ.'
+    a: 'SmartFix miễn phí 100% chi phí kiểm tra và tư vấn nếu quý khách tiến hành sửa chữa. Trường hợp thợ đã đến tận nơi, tháo kiểm tra chi tiết và báo đúng giá niêm yết nhưng quý khách đổi ý chưa sửa, chúng tôi chỉ xin phép thu phí hỗ trợ xăng xe kiểm tra tượng trưng 50.000đ.'
   },
   {
     q: 'Dịch vụ sửa chữa và linh kiện có được bảo hành không?',
-    a: 'Tất cả các dịch vụ sửa chữa và thay thế linh kiện tại CoolCall đều có dán tem bảo hành và kích hoạt bảo hành điện tử qua số điện thoại từ 3 đến 6 tháng (riêng block máy nén bảo hành 12 tháng). Trong thời gian bảo hành, nếu có bất kỳ trục trặc nào, thợ sẽ đến khắc phục miễn phí trong 30 phút.'
+    a: 'Tất cả các dịch vụ sửa chữa và thay thế linh kiện tại SmartFix đều có dán tem bảo hành và kích hoạt bảo hành điện tử qua số điện thoại từ 3 đến 6 tháng (riêng block máy nén bảo hành 12 tháng). Trong thời gian bảo hành, nếu có bất kỳ trục trặc nào, thợ sẽ đến khắc phục miễn phí trong 30 phút.'
   },
   {
     q: 'Tôi có thể thanh toán bằng những hình thức nào?',
-    a: 'Quý khách chỉ thanh toán sau khi máy đã chạy êm mát và khách hàng nghiệm thu hoàn toàn hài lòng. CoolCall hỗ trợ thanh toán linh hoạt qua Tiền mặt trực tiếp cho thợ, Quét mã QR chuyển khoản ngân hàng (VietQR) hoặc ví MoMo.'
+    a: 'Quý khách chỉ thanh toán sau khi máy đã chạy êm mát và khách hàng nghiệm thu hoàn toàn hài lòng. SmartFix hỗ trợ thanh toán linh hoạt qua Tiền mặt trực tiếp cho thợ, Quét mã QR chuyển khoản ngân hàng (VietQR) hoặc ví MoMo.'
   }
 ];
 

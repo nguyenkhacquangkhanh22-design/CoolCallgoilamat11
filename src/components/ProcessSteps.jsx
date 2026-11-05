@@ -50,7 +50,7 @@ export default function ProcessSteps({ onStartBooking }) {
             Quy Trình Đặt Thợ 3 Bước Tiện Lợi
           </h2>
           <p className="mt-3 text-base sm:text-lg text-slate-600">
-            Chỉ với chưa đầy 1 phút thao tác trên điện thoại hoặc máy tính, kỹ thuật viên CoolCall chuyên nghiệp sẽ sẵn sàng lên đường hỗ trợ bạn ngay.
+            Chỉ với chưa đầy 1 phút thao tác trên điện thoại hoặc máy tính, kỹ thuật viên SmartFix chuyên nghiệp sẽ sẵn sàng lên đường hỗ trợ bạn ngay.
           </p>
         </div>
 

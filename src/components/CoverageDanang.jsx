@@ -1,6 +1,6 @@
 import React from 'react';
 import { MapPin, Navigation, Clock, ArrowUpRight } from 'lucide-react';
-import { DANANG_DISTRICTS } from '../data/coolcallData';
+import { DANANG_DISTRICTS } from '../data/smartfixData';
 import { useAuth } from '../context/useAuth';
 
 export default function CoverageDanang({ onSelectDistrict }) {
@@ -29,7 +29,7 @@ export default function CoverageDanang({ onSelectDistrict }) {
             Khu Vực Phục Vụ Tại Đà Nẵng
           </h2>
           <p className="mt-3 text-base sm:text-lg text-slate-600">
-            Hệ thống trạm kỹ thuật cơ động CoolCall được phân bổ khắp các trục đường chính tại Đà Nẵng, giúp thợ tiếp cận nhà khách hàng nhanh nhất chỉ trong 20 - 30 phút.
+            Hệ thống trạm kỹ thuật cơ động SmartFix được phân bổ khắp các trục đường chính tại Đà Nẵng, giúp thợ tiếp cận nhà khách hàng nhanh nhất chỉ trong 20 - 30 phút.
           </p>
         </div>
 

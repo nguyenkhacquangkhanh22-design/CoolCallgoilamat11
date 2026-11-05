@@ -1,4 +1,4 @@
-// Input Validation & XSS Sanitization Helper for CoolCall
+// Input Validation & XSS Sanitization Helper for SmartFix
 
 // Sanitize string to prevent XSS / script injection
 export function sanitizeString(str) {

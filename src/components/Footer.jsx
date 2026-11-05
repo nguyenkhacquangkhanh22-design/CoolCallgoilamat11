@@ -52,7 +52,7 @@ export default function Footer({ onScrollToTop, onNavigateTo }) {
               </div>
               <div>
                 <span className="text-2xl font-black text-white tracking-tight">
-                  Cool<span className="text-sky-400">Call</span>
+                  Smart<span className="text-sky-400">Fix</span>
                 </span>
                 <span className="ml-2 bg-sky-900/80 text-sky-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-sky-700 uppercase">
                   Đà Nẵng
@@ -180,7 +180,7 @@ export default function Footer({ onScrollToTop, onNavigateTo }) {
               </div>
 
               <div className="pt-2">
-                <span className="text-[11px] text-slate-400">Email: hotro@coolcall.vn</span>
+                <span className="text-[11px] text-slate-400">Email: hotro@smartfix.vn</span>
               </div>
             </div>
           </div>
@@ -190,7 +190,7 @@ export default function Footer({ onScrollToTop, onNavigateTo }) {
         {/* Bottom copyright line */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 text-center sm:text-left">
           <div>
-            © 2026 <strong>CoolCall Đà Nẵng</strong>. Bản quyền thuộc về Công ty TNHH Kỹ Thuật Điện Lạnh CoolCall.
+            © 2026 <strong>SmartFix Đà Nẵng</strong>. Bản quyền thuộc về Công ty TNHH Kỹ Thuật Điện Lạnh SmartFix.
           </div>
 
           <div className="flex items-center gap-4">

@@ -1,4 +1,4 @@
-# CoolCall - Dịch Vụ Đặt Thợ Sửa Chữa & Vệ Sinh Máy Lạnh Trực Tuyến (Đà Nẵng)
+# SmartFix - Dịch Vụ Đặt Thợ Sửa Chữa & Vệ Sinh Máy Lạnh Trực Tuyến (Đà Nẵng)
 
 Ứng dụng web Single Page Application (SPA) hoàn chỉnh được phát triển bằng **React 19**, **Vite** và **Tailwind CSS**, cung cấp dịch vụ đặt thợ điện lạnh tận nhà nhanh chóng trong vòng 30 phút tại TP. Đà Nẵng.
 
@@ -16,7 +16,7 @@
 ## 🚀 Các Tính Năng & Thành Phần Giao Diện Chính
 
 ### 1. Header / Navigation
-- **Logo CoolCall**: Biểu tượng kết hợp bông tuyết làm lạnh & cờ-lê kỹ thuật chuyên nghiệp.
+- **Logo SmartFix**: Biểu tượng kết hợp bông tuyết làm lạnh & cờ-lê kỹ thuật chuyên nghiệp.
 - **Slogan**: *"Thợ sửa máy lạnh tận tâm - Có mặt sau 30 phút"*.
 - **Thanh thông báo thời gian thực**: Hiển thị số lượng thợ đang trực sẵn tại các quận Đà Nẵng, cam kết tốc độ và hotline 24/7.
 - **Menu điều hướng**: Dịch vụ, Bảng giá, Quy trình 3 bước, Khu vực phục vụ, Đánh giá, Hỏi đáp.
@@ -80,7 +80,7 @@
 - Nền xanh đậm chữ trắng (`bg-blue-950`).
 - Danh sách 5 trạm kỹ thuật trên các trục đường chính tại Đà Nẵng.
 - Hotline cứu hộ điện lạnh 24/7: **0905.888.666**.
-- Giờ làm việc, email, chính sách bảo hành và bản quyền CoolCall.
+- Giờ làm việc, email, chính sách bảo hành và bản quyền SmartFix.
 
 ### 10. Floating Actions (Hành động nổi)
 - Nút gọi khẩn cấp hotline và nút đặt thợ nhanh ghim ở góc màn hình.

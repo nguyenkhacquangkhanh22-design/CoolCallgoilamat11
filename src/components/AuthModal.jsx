@@ -270,7 +270,7 @@ export default function AuthModal() {
                 </span>
                 <span className="text-[10px] text-slate-400">{simulatedSmsToast.time}</span>
               </div>
-              <p className="text-xs font-bold text-white mt-0.5">Tổng đài CoolCall Đà Nẵng</p>
+              <p className="text-xs font-bold text-white mt-0.5">Tổng đài SmartFix Đà Nẵng</p>
               <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                 Gửi đến: <strong className="text-white font-mono">{simulatedSmsToast.phoneNumber}</strong><br />
                 Mã xác thực OTP đăng ký của bạn là: <strong className="text-amber-300 font-mono text-base tracking-widest">{simulatedSmsToast.otp}</strong> (Hiệu lực 5 phút).
@@ -318,7 +318,7 @@ export default function AuthModal() {
             <div className="flex items-center gap-2 mb-1.5">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
               <span className="text-[11px] font-bold uppercase tracking-wider text-sky-300">
-                CoolCall • Phân Quyền Người Dùng
+                SmartFix • Phân Quyền Người Dùng
               </span>
             </div>
 
@@ -673,7 +673,7 @@ export default function AuthModal() {
                       <ol className="list-decimal list-inside space-y-0.5 text-[11px] text-slate-600 pl-1">
                         <li>Mở ứng dụng <strong>Gmail</strong> trên điện thoại hoặc máy tính của bạn.</li>
                         <li>Kiểm tra mục Hộp thư đến (Inbox) hoặc thư mục <strong>Spam / Thư rác</strong>.</li>
-                        <li>Tìm thư từ <strong>CoolCall Đà Nẵng</strong> để lấy mã xác thực gồm 6 chữ số.</li>
+                        <li>Tìm thư từ <strong>SmartFix Đà Nẵng</strong> để lấy mã xác thực gồm 6 chữ số.</li>
                       </ol>
                       <div className="pt-1.5">
                         <a

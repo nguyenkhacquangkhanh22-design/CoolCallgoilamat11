@@ -15,7 +15,7 @@ import {
   Sparkles,
   HelpCircle
 } from 'lucide-react';
-import { SERVICES, SERVICE_CATEGORIES } from '../data/coolcallData';
+import { SERVICES, SERVICE_CATEGORIES } from '../data/smartfixData';
 
 const getServiceIcon = (id) => {
   switch (id) {
@@ -208,7 +208,7 @@ export default function ServicesGrid({ onSelectService, activeFilterCategory = '
             <div>
               <h4 className="font-bold text-sm sm:text-base text-white">Chính sách "Hài Lòng Mới Thanh Toán"</h4>
               <p className="text-xs sm:text-sm text-blue-200">
-                Thợ kiểm tra miễn phí. Nếu khách hàng không đồng ý sửa chữa, CoolCall không thu bất cứ khoản chi phí ép buộc nào.
+                Thợ kiểm tra miễn phí. Nếu khách hàng không đồng ý sửa chữa, SmartFix không thu bất cứ khoản chi phí ép buộc nào.
               </p>
             </div>
           </div>

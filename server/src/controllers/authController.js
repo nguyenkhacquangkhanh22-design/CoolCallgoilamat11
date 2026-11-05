@@ -45,7 +45,7 @@ function writeUsers(users) {
 }
 
 function hashPassword(password) {
-  return crypto.createHash('sha256').update(password + '_coolcall_salt_2026').digest('hex');
+  return crypto.createHash('sha256').update(password + '_smartfix_salt_2026').digest('hex');
 }
 
 export const authController = {
@@ -168,7 +168,7 @@ export const authController = {
     try {
       const { fullName, email, avatar, googleId } = req.body || {};
       const cleanName = sanitizeString(fullName || 'Khách hàng Google');
-      const cleanEmail = sanitizeString(email || 'google_user@coolcall.vn');
+      const cleanEmail = sanitizeString(email || 'google_user@smartfix.vn');
 
       const users = readUsers();
       let user = users.find(u => u.email === cleanEmail);

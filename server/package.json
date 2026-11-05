@@ -1,7 +1,7 @@
 {
-  "name": "coolcall-backend",
+  "name": "smartfix-backend",
   "version": "1.0.0",
-  "description": "Secure Node.js & Express REST API for CoolCall AC Booking Service",
+  "description": "Secure Node.js & Express REST API for SmartFix AC Booking Service",
   "type": "module",
   "main": "src/server.js",
   "scripts": {

@@ -5,7 +5,7 @@ import {
   Info,
   ArrowRight
 } from 'lucide-react';
-import { PRICING_LIST } from '../data/coolcallData';
+import { PRICING_LIST } from '../data/smartfixData';
 
 export default function PricingTable({ onSelectPriceItem }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,7 +29,7 @@ export default function PricingTable({ onSelectPriceItem }) {
             Bảng Giá Dịch Vụ Niêm Yết Công Khai
           </h2>
           <p className="mt-3 text-base sm:text-lg text-slate-600">
-            CoolCall cam kết 100% không nói thách, không vẽ bệnh và không phát sinh bất kỳ khoản phí nào ngoài báo giá đã thỏa thuận với khách hàng.
+            SmartFix cam kết 100% không nói thách, không vẽ bệnh và không phát sinh bất kỳ khoản phí nào ngoài báo giá đã thỏa thuận với khách hàng.
           </p>
 
           {/* Quick Filter Search */}

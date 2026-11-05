@@ -80,13 +80,13 @@ app.get('/health', (req, res) => {
     status: 'healthy',
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
-    service: 'CoolCall Backend API'
+    service: 'SmartFix Backend API'
   });
 });
 
 app.get('/api', (req, res) => {
   res.status(200).json({
-    message: 'Chào mừng bạn đến với CoolCall Backend API (Đà Nẵng)',
+    message: 'Chào mừng bạn đến với SmartFix Backend API (Đà Nẵng)',
     version: '1.0.0',
     documentation: {
       postBooking: 'POST /api/bookings',
@@ -102,13 +102,13 @@ app.get('/api', (req, res) => {
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: `Đường dẫn API '${req.originalUrl}' không tồn tại trên hệ thống CoolCall.`
+    message: `Đường dẫn API '${req.originalUrl}' không tồn tại trên hệ thống SmartFix.`
   });
 });
 
 // 7. Global Error Handler (Hides stack trace in production for security)
 app.use((err, req, res, _next) => {
-  console.error('[CoolCall Error Handler]:', err.message);
+  console.error('[SmartFix Error Handler]:', err.message);
   res.status(err.status || 500).json({
     success: false,
     message: NODE_ENV === 'production' ? 'Đã xảy ra lỗi máy chủ nội bộ' : err.message
@@ -118,7 +118,7 @@ app.use((err, req, res, _next) => {
 // Start Server
 app.listen(PORT, () => {
   console.log(`===============================================`);
-  console.log(`🚀 CoolCall Backend API running securely on port ${PORT}`);
+  console.log(`🚀 SmartFix Backend API running securely on port ${PORT}`);
   console.log(`🔒 Mode: ${NODE_ENV}`);
   console.log(`🌐 Allowed Origins: ${allowedOrigins.join(', ')}`);
   console.log(`📡 Health Check: http://localhost:${PORT}/health`);

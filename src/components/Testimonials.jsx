@@ -1,6 +1,6 @@
 import React from 'react';
 import { Star, CheckCircle, MessageSquareHeart } from 'lucide-react';
-import { REVIEWS } from '../data/coolcallData';
+import { REVIEWS } from '../data/smartfixData';
 
 export default function Testimonials() {
   return (
@@ -11,7 +11,7 @@ export default function Testimonials() {
         <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-16">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-100 text-blue-900 text-xs font-bold uppercase tracking-wider mb-3 border border-blue-200">
             <MessageSquareHeart className="w-3.5 h-3.5 text-blue-700" />
-            Khách hàng nói gì về CoolCall?
+            Khách hàng nói gì về SmartFix?
           </div>
           <h2 className="text-3xl sm:text-4xl font-black text-blue-950 tracking-tight">
             Đánh Giá Thực Tế Từ Khách Hàng Đà Nẵng
@@ -85,7 +85,7 @@ export default function Testimonials() {
             <img className="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Customer" />
           </div>
           <div className="text-sm text-slate-700 text-left">
-            <strong className="text-blue-950">99.4% Khách hàng</strong> tại Đà Nẵng sẵn sàng giới thiệu CoolCall cho bạn bè và người thân.
+            <strong className="text-blue-950">99.4% Khách hàng</strong> tại Đà Nẵng sẵn sàng giới thiệu SmartFix cho bạn bè và người thân.
           </div>
         </div>
 

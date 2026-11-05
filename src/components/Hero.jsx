@@ -12,7 +12,7 @@ import {
   Users,
   ChevronDown
 } from 'lucide-react';
-import { DANANG_DISTRICTS } from '../data/coolcallData';
+import { DANANG_DISTRICTS } from '../data/smartfixData';
 
 export default function Hero({ onSearchSubmit, onSelectQuickService, onGoNext }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -212,7 +212,7 @@ export default function Hero({ onSearchSubmit, onSelectQuickService, onGoNext })
                   <div className="relative h-72 sm:h-80 w-full overflow-hidden">
                     <img 
                       src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80" 
-                      alt="Thợ kỹ thuật điện lạnh CoolCall Đà Nẵng đang kiểm tra bảo dưỡng máy điều hòa"
+                      alt="Thợ kỹ thuật điện lạnh SmartFix Đà Nẵng đang kiểm tra bảo dưỡng máy điều hòa"
                       className="w-full h-full object-cover object-center filter brightness-95 contrast-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
@@ -231,7 +231,7 @@ export default function Hero({ onSearchSubmit, onSelectQuickService, onGoNext })
 
                     {/* Bottom overlay inside image */}
                     <div className="absolute bottom-4 left-4 right-4 text-left">
-                      <p className="text-xs text-sky-300 font-semibold uppercase tracking-wider">Kỹ thuật viên CoolCall</p>
+                      <p className="text-xs text-sky-300 font-semibold uppercase tracking-wider">Kỹ thuật viên SmartFix</p>
                       <h3 className="text-xl font-bold text-white leading-tight">Quy trình vệ sinh khử khuẩn áp lực cao</h3>
                       <p className="text-xs text-slate-300 mt-0.5">Không văng bẩn sàn nhà • Bảo dưỡng kỹ từng cánh quạt</p>
                     </div>

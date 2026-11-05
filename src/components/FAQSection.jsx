@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, HelpCircle, PhoneCall } from 'lucide-react';
-import { FAQS } from '../data/coolcallData';
+import { FAQS } from '../data/smartfixData';
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState(0);
@@ -67,7 +67,7 @@ export default function FAQSection() {
         <div className="mt-12 p-6 rounded-2xl bg-blue-50/80 border border-blue-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
           <div>
             <h4 className="font-bold text-blue-950 text-base">Bạn còn câu hỏi khác về tình trạng máy lạnh?</h4>
-            <p className="text-xs text-slate-600 mt-0.5">Kỹ thuật viên trưởng CoolCall sẵn sàng tư vấn trực tiếp miễn phí qua Zalo / Hotline.</p>
+            <p className="text-xs text-slate-600 mt-0.5">Kỹ thuật viên trưởng SmartFix sẵn sàng tư vấn trực tiếp miễn phí qua Zalo / Hotline.</p>
           </div>
           <a
             href="tel:0905888666"

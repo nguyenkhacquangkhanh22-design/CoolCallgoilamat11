@@ -18,7 +18,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
-import { DANANG_DISTRICTS, SERVICES, AC_TYPES, AC_BRANDS, COMMON_ISSUES } from '../data/coolcallData';
+import { DANANG_DISTRICTS, SERVICES, AC_TYPES, AC_BRANDS, COMMON_ISSUES } from '../data/smartfixData';
 
 // Helper to format local date string (YYYY-MM-DD)
 const getLocalDateString = (offsetDays = 0) => {
@@ -243,7 +243,7 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
             Đặt Lịch Thợ Sửa Máy Lạnh Nhanh
           </h2>
           <p className="mt-3 text-base sm:text-lg text-slate-600">
-            Điền thông tin bên dưới, kỹ thuật viên CoolCall tại khu vực của bạn sẽ nhận thông báo và liên hệ xác nhận ngay.
+            Điền thông tin bên dưới, kỹ thuật viên SmartFix tại khu vực của bạn sẽ nhận thông báo và liên hệ xác nhận ngay.
           </p>
         </div>
 

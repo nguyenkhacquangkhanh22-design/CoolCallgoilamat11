@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 import { AuthContext } from './auth-context-base';
 
-const STORAGE_KEY = 'coolcall_auth_user';
+const STORAGE_KEY = 'smartfix_auth_user';
 
 export function AuthProvider({ children }) {
   // role: 'guest' | 'customer'
   const [user, setUser] = useState(() => {
     try {
-      const savedUser = localStorage.getItem(STORAGE_KEY);
+      const savedUser = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('coolcall_auth_user');
       if (savedUser) {
         const parsed = JSON.parse(savedUser);
         if (parsed && (parsed.phoneNumber || parsed.email)) {
@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
 
   const [role, setRole] = useState(() => {
     try {
-      const savedUser = localStorage.getItem(STORAGE_KEY);
+      const savedUser = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('coolcall_auth_user');
       if (savedUser) {
         const parsed = JSON.parse(savedUser);
         if (parsed && (parsed.phoneNumber || parsed.email)) {
@@ -142,7 +142,7 @@ export function AuthProvider({ children }) {
     }
 
     // OTP Verified! Save customer to local storage and sync
-    const localUsers = JSON.parse(localStorage.getItem('coolcall_registered_users') || '[]');
+    const localUsers = JSON.parse(localStorage.getItem('smartfix_registered_users') || '[]');
     const newCustomer = {
       id: 'usr_p_' + Date.now(),
       fullName: phoneOtpState.fullName,
@@ -159,7 +159,7 @@ export function AuthProvider({ children }) {
     } else {
       localUsers.push(newCustomer);
     }
-    localStorage.setItem('coolcall_registered_users', JSON.stringify(localUsers));
+    localStorage.setItem('smartfix_registered_users', JSON.stringify(localUsers));
 
     const sessionCustomer = {
       id: newCustomer.id,
@@ -218,7 +218,7 @@ export function AuthProvider({ children }) {
             to_email: cleanEmail,
             to_name: cleanName,
             otp_code: generatedOtp,
-            message: `Mã xác thực CoolCall OTP của bạn là: ${generatedOtp}. Mã có hiệu lực trong 5 phút.`
+            message: `Mã xác thực SmartFix OTP của bạn là: ${generatedOtp}. Mã có hiệu lực trong 5 phút.`
           },
           emailJsPublicKey
         );
@@ -324,7 +324,7 @@ export function AuthProvider({ children }) {
         setRole('customer');
         localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedUser));
         closeAuthModal();
-        showToast(`🎉 Đăng nhập thành công! Chào mừng Khách Hàng ${loggedUser.fullName} quay trở lại CoolCall.`, 'success');
+        showToast(`🎉 Đăng nhập thành công! Chào mừng Khách Hàng ${loggedUser.fullName} quay trở lại SmartFix.`, 'success');
         return { success: true };
       } else {
         const errData = await res.json();
@@ -332,7 +332,7 @@ export function AuthProvider({ children }) {
       }
     } catch {
       // Client-side fallback if backend server is not running
-      const localUsers = JSON.parse(localStorage.getItem('coolcall_registered_users') || '[]');
+      const localUsers = JSON.parse(localStorage.getItem('smartfix_registered_users') || '[]');
       const found = localUsers.find(u => u.phoneNumber === cleanPhone && u.password === password);
       
       if (found) {
@@ -388,7 +388,7 @@ export function AuthProvider({ children }) {
         setRole('customer');
         localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
         closeAuthModal();
-        showToast(`🎉 Đăng ký thành công! Bạn đã trở thành Khách Hàng (Customer) của CoolCall và có thể đặt thợ ngay!`, 'success');
+        showToast(`🎉 Đăng ký thành công! Bạn đã trở thành Khách Hàng (Customer) của SmartFix và có thể đặt thợ ngay!`, 'success');
         return { success: true };
       } else {
         const errData = await res.json();
@@ -396,7 +396,7 @@ export function AuthProvider({ children }) {
       }
     } catch {
       // Local fallback
-      const localUsers = JSON.parse(localStorage.getItem('coolcall_registered_users') || '[]');
+      const localUsers = JSON.parse(localStorage.getItem('smartfix_registered_users') || '[]');
       if (localUsers.some(u => u.phoneNumber === cleanPhone)) {
         return { success: false, message: 'Số điện thoại này đã được đăng ký. Vui lòng chuyển sang tab Đăng nhập.' };
       }
@@ -410,7 +410,7 @@ export function AuthProvider({ children }) {
       };
 
       localUsers.push(newUser);
-      localStorage.setItem('coolcall_registered_users', JSON.stringify(localUsers));
+      localStorage.setItem('smartfix_registered_users', JSON.stringify(localUsers));
 
       const sessionUser = {
         fullName,
@@ -423,7 +423,7 @@ export function AuthProvider({ children }) {
       setRole('customer');
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionUser));
       closeAuthModal();
-      showToast(`🎉 Đăng ký thành công! Bạn đã trở thành Khách Hàng (Customer) của CoolCall và có thể đặt thợ ngay!`, 'success');
+      showToast(`🎉 Đăng ký thành công! Bạn đã trở thành Khách Hàng (Customer) của SmartFix và có thể đặt thợ ngay!`, 'success');
       return { success: true };
     }
   };

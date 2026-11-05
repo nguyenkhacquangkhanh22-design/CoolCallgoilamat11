@@ -57,7 +57,7 @@ export default function BookingSuccessModal({ booking, onClose }) {
                 Đặt lịch thành công!
               </span>
               <h3 className="text-xl font-black text-white">
-                CoolCall Đã Tiếp Nhận Yêu Cầu
+                SmartFix Đã Tiếp Nhận Yêu Cầu
               </h3>
             </div>
           </div>

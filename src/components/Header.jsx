@@ -126,7 +126,7 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="text-xl sm:text-2xl font-black tracking-tight text-blue-950 font-sans">
-                    Cool<span className="text-sky-600">Call</span>
+                    Smart<span className="text-sky-600">Fix</span>
                   </span>
                   <span className="bg-sky-100 text-sky-800 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider border border-sky-200">
                     Đà Nẵng

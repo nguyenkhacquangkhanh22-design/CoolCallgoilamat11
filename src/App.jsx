@@ -29,13 +29,13 @@ import { SlideTabs, SideSlideArrows, SlideBottomBar } from './components/SlideNa
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/useAuth';
 import AuthModal from './components/AuthModal';
-import { SERVICES } from './data/coolcallData';
+import { SERVICES } from './data/smartfixData';
 
 const SLIDES = [
   {
     id: 'hero',
     label: 'Trang chủ',
-    title: 'CoolCall Đà Nẵng',
+    title: 'SmartFix Đà Nẵng',
     icon: Home,
   },
   {
@@ -65,7 +65,7 @@ const SLIDES = [
   {
     id: 'why-us',
     label: 'Ưu điểm',
-    title: 'Tại sao chọn CoolCall',
+    title: 'Tại sao chọn SmartFix',
     icon: ShieldCheck,
   },
   {
@@ -88,7 +88,7 @@ const SLIDES = [
   },
 ];
 
-function CoolCallApp() {
+function SmartFixApp() {
   const { isGuest, openAuthModal, toast, closeToast } = useAuth();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedService, setSelectedService] = useState(null);
@@ -348,7 +348,7 @@ function CoolCallApp() {
           </div>
         </div>
 
-        {/* Slide 5: Tại sao chọn CoolCall */}
+        {/* Slide 5: Tại sao chọn SmartFix */}
         <div 
           id="why-us"
           className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
@@ -457,7 +457,7 @@ function CoolCallApp() {
 export default function App() {
   return (
     <AuthProvider>
-      <CoolCallApp />
+      <SmartFixApp />
     </AuthProvider>
   );
 }

@@ -40,7 +40,7 @@ export default function WhyChooseUs() {
     {
       icon: <Cpu className="w-7 h-7 text-purple-600" />,
       title: 'Linh Kiện Chính Hãng Chuẩn Đời',
-      desc: 'CoolCall là đối tác của các hãng Daikin, Panasonic, Casper, LG, Toshiba... Cung cấp tụ, cảm biến, bo mạch, quạt và gas lạnh R32/R410A nguyên chất 100%.'
+      desc: 'SmartFix là đối tác của các hãng Daikin, Panasonic, Casper, LG, Toshiba... Cung cấp tụ, cảm biến, bo mạch, quạt và gas lạnh R32/R410A nguyên chất 100%.'
     }
   ];
 
@@ -59,7 +59,7 @@ export default function WhyChooseUs() {
             Uy tín tạo niềm tin
           </div>
           <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Vì Sao 15.000+ Khách Hàng Đà Nẵng Chọn CoolCall?
+            Vì Sao 15.000+ Khách Hàng Đà Nẵng Chọn SmartFix?
           </h2>
           <p className="mt-3 text-base sm:text-lg text-blue-200">
             Chúng tôi định nghĩa lại dịch vụ điện lạnh: Văn minh hơn, minh bạch hơn và luôn đặt trải nghiệm của khách hàng lên hàng đầu.
@@ -92,7 +92,7 @@ export default function WhyChooseUs() {
             <HeartHandshake className="w-10 h-10 text-amber-400 shrink-0" />
             <div>
               <div className="font-bold text-base text-white">Cam kết hài lòng 100%</div>
-              <div className="text-xs text-blue-200">Nếu thợ phục vụ không lịch sự hoặc không sạch sẽ, CoolCall hoàn tiền 100% dịch vụ.</div>
+              <div className="text-xs text-blue-200">Nếu thợ phục vụ không lịch sự hoặc không sạch sẽ, SmartFix hoàn tiền 100% dịch vụ.</div>
             </div>
           </div>
           <a

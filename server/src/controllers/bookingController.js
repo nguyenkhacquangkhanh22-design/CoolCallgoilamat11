@@ -17,11 +17,11 @@ export const bookingController = {
 
       const newBooking = db.createBooking(sanitizedData);
 
-      console.log(`[CoolCall Audit] New booking created: ${newBooking.bookingCode} for ${newBooking.fullName} in ${newBooking.district}`);
+      console.log(`[SmartFix Audit] New booking created: ${newBooking.bookingCode} for ${newBooking.fullName} in ${newBooking.district}`);
 
       return res.status(201).json({
         success: true,
-        message: 'Đặt lịch thợ CoolCall thành công',
+        message: 'Đặt lịch thợ SmartFix thành công',
         data: newBooking
       });
     } catch (error) {
@@ -63,7 +63,7 @@ export const bookingController = {
   getAllBookings(req, res) {
     try {
       const authHeader = req.headers.authorization;
-      const adminKey = process.env.ADMIN_API_KEY || 'coolcall_secure_admin_2026_danang';
+      const adminKey = process.env.ADMIN_API_KEY || 'smartfix_secure_admin_2026_danang';
 
       // Verify Bearer token or api-key header
       const token = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : req.headers['x-api-key'];
