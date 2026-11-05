@@ -95,31 +95,58 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setIsSubmitting(true);
 
-    // Simulate network submission
+    const payload = {
+      fullName,
+      phoneNumber,
+      district: currentDistrictObj.name,
+      addressDetail,
+      fullAddress: `${addressDetail}, ${currentDistrictObj.name}, Đà Nẵng`,
+      serviceName: currentService.title,
+      servicePriceDisplay: currentService.priceDisplay,
+      acType: AC_TYPES.find((t) => t.id === acType)?.name || acType,
+      acBrand,
+      acQuantity,
+      issueDescription: issueDescription || 'Kiểm tra bảo dưỡng tổng thể',
+      scheduleType: scheduleType === 'urgent' ? 'Cần thợ gấp (sau 30 phút)' : `Đặt trước: ${appointmentDate} lúc ${appointmentSlot}`,
+      customerNote,
+      estimatedTotal
+    };
+
+    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
+    try {
+      // Connect to secure Backend API
+      const response = await fetch(`${apiUrl}/bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setIsSubmitting(false);
+        onBookingSubmit(result.data);
+        return;
+      }
+    } catch {
+      // Fallback seamlessly if backend is offline or on static demo
+      console.info('Backend unreachable or running in static GitHub Pages mode. Using client fallback.');
+    }
+
+    // Client-side fallback if backend server is not active
     setTimeout(() => {
       setIsSubmitting(false);
       const bookingData = {
         bookingCode: `CC-${Math.floor(1000 + Math.random() * 9000)}`,
-        fullName,
-        phoneNumber,
-        district: currentDistrictObj.name,
-        addressDetail,
-        fullAddress: `${addressDetail}, ${currentDistrictObj.name}, Đà Nẵng`,
-        serviceName: currentService.title,
-        servicePriceDisplay: currentService.priceDisplay,
-        acType: AC_TYPES.find((t) => t.id === acType)?.name || acType,
-        acBrand,
-        acQuantity,
-        issueDescription: issueDescription || 'Kiểm tra bảo dưỡng tổng thể',
-        scheduleType: scheduleType === 'urgent' ? 'Cần thợ gấp (sau 30 phút)' : `Đặt trước: ${appointmentDate} lúc ${appointmentSlot}`,
-        customerNote,
-        estimatedTotal,
+        ...payload,
         technician: {
           name: 'Nguyễn Văn Hùng',
           phone: '0905.888.666',
@@ -129,7 +156,7 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
       };
 
       onBookingSubmit(bookingData);
-    }, 600);
+    }, 400);
   };
 
   return (

@@ -1,0 +1,51 @@
+[
+  {
+    "bookingCode": "CC-9817",
+    "fullName": "Lê Minh Trí",
+    "phoneNumber": "0905123456",
+    "district": "Quận Hải Châu",
+    "addressDetail": "120 Nguyễn Văn Linh",
+    "fullAddress": "120 Nguyễn Văn Linh, Quận Hải Châu, Đà Nẵng",
+    "serviceName": "Vệ sinh máy lạnh treo tường",
+    "servicePriceDisplay": "150.000đ",
+    "acType": "Treo tường Inverter (Tiết kiệm điện)",
+    "acBrand": "Daikin",
+    "acQuantity": 2,
+    "issueDescription": "Vệ sinh định kỳ",
+    "scheduleType": "Cần thợ gấp (sau 30 phút)",
+    "customerNote": "Tầng 2",
+    "estimatedTotal": 270000,
+    "status": "confirmed",
+    "technician": {
+      "name": "Nguyễn Văn Hùng",
+      "phone": "0905.888.666",
+      "activeDistrict": "Quận Hải Châu",
+      "estArrival": "Sau 25 - 30 phút"
+    },
+    "createdAt": "2026-11-05T15:27:04.337Z"
+  },
+  {
+    "bookingCode": "CC-1001",
+    "fullName": "Trần Văn Hoàng",
+    "phoneNumber": "0905112233",
+    "district": "Quận Hải Châu",
+    "addressDetail": "120 Bạch Đằng",
+    "fullAddress": "120 Bạch Đằng, Quận Hải Châu, Đà Nẵng",
+    "serviceName": "Vệ sinh máy lạnh treo tường",
+    "servicePriceDisplay": "150.000đ",
+    "acType": "Treo tường Inverter (Tiết kiệm điện)",
+    "acBrand": "Daikin",
+    "acQuantity": 2,
+    "issueDescription": "Bảo dưỡng định kỳ",
+    "scheduleType": "Cần thợ gấp (sau 30 phút)",
+    "customerNote": "Nhà có thang sẵn",
+    "estimatedTotal": 270000,
+    "status": "completed",
+    "technician": {
+      "name": "Nguyễn Văn Hùng",
+      "phone": "0905.888.666",
+      "estArrival": "Đã hoàn thành"
+    },
+    "createdAt": "2026-11-04T15:22:55.810Z"
+  }
+]

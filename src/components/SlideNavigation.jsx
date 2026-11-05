@@ -4,7 +4,6 @@ import {
   ChevronRight, 
   Phone, 
   Wrench, 
-  ArrowRight,
   MoveRight,
   RotateCcw
 } from 'lucide-react';
