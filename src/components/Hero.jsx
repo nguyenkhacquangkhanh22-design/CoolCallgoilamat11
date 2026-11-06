@@ -10,11 +10,14 @@ import {
   Sparkles,
   Award,
   Users,
-  ChevronDown
+  ChevronDown,
+  Wrench
 } from 'lucide-react';
+import { useAuth } from '../context/useAuth';
 import { DANANG_DISTRICTS } from '../data/smartfixData';
 
 export default function Hero({ onSearchSubmit, onSelectQuickService, onGoNext }) {
+  const { openKycModal } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('hai-chau');
 
@@ -172,6 +175,31 @@ export default function Hero({ onSearchSubmit, onSelectQuickService, onGoNext })
                   <div className="text-[11px] text-slate-500">Báo giá trước</div>
                 </div>
               </div>
+            </div>
+
+            {/* Recruitment Card for Technicians */}
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-50 via-amber-100/70 to-sky-50 border-2 border-amber-300 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-left">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-400 text-amber-950 flex items-center justify-center font-bold text-lg shrink-0 shadow-xs">
+                  🛠️
+                </div>
+                <div>
+                  <p className="text-xs sm:text-sm font-black text-amber-950">
+                    Bạn là Thợ điện lạnh muốn nhận đơn?
+                  </p>
+                  <p className="text-[11px] text-amber-900/80">
+                    Thu nhập 25 - 40 triệu/tháng • Nhận đơn trực tiếp qua web • Xác thực eKYC CCCD
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={openKycModal}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:from-amber-800 text-white font-extrabold text-xs shadow-md shadow-amber-900/20 transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center justify-center gap-1.5 hover:scale-105"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+                <span>Đăng ký làm Thợ ngay (eKYC)</span>
+              </button>
             </div>
 
             {/* Swipe guide banner */}

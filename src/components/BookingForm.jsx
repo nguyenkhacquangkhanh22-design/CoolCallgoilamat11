@@ -40,7 +40,7 @@ const TIME_SLOTS = [
 ];
 
 export default function BookingForm({ selectedServiceFromParent, initialDistrict = 'hai-chau', onBookingSubmit }) {
-  const { user, isGuest, openAuthModal } = useAuth();
+  const { user, isGuest, openAuthModal, openKycModal } = useAuth();
 
   const [todayStr] = useState(() => getLocalDateString(0));
   const [maxDateStr] = useState(() => getLocalDateString(60));
@@ -892,6 +892,25 @@ export default function BookingForm({ selectedServiceFromParent, initialDistrict
                   <Phone className="w-3.5 h-3.5 text-sky-300" />
                   <span>0905.888.666</span>
                 </a>
+              </div>
+
+              {/* Technician recruitment callout */}
+              <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-center justify-between text-left">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xl">🛠️</span>
+                  <div>
+                    <div className="text-xs font-bold text-amber-950">Bạn là thợ sửa điều hòa?</div>
+                    <div className="text-[11px] text-amber-800">Gia nhập mạng lưới SmartFix nhận đơn</div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={openKycModal}
+                  className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1 shadow-xs cursor-pointer whitespace-nowrap"
+                >
+                  <Sparkles className="w-3 h-3 text-amber-200" />
+                  <span>Đăng ký làm thợ</span>
+                </button>
               </div>
             </div>
 
