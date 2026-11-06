@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { DANANG_DISTRICTS } from '../data/smartfixData';
 
-export default function Hero({ onSearchSubmit, onSelectQuickService }) {
+export default function Hero({ onSearchSubmit, onSelectQuickService, onGoNext }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('hai-chau');
 
@@ -174,23 +174,29 @@ export default function Hero({ onSearchSubmit, onSelectQuickService }) {
               </div>
             </div>
 
-            {/* Quick Action CTAs */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
-              <a
-                href="#booking"
-                className="w-full sm:w-auto px-6 py-3.5 bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md shadow-blue-900/25 hover:shadow-lg transition-all cursor-pointer"
+            {/* Swipe guide banner */}
+            {onGoNext && (
+              <div 
+                onClick={onGoNext}
+                className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-blue-900 via-blue-800 to-sky-700 hover:from-blue-800 hover:to-sky-600 text-white shadow-lg shadow-blue-900/15 flex items-center justify-between gap-3 cursor-pointer group transition-all"
               >
-                <Clock className="w-4 h-4 text-sky-300" />
-                <span>Đặt thợ đến ngay sau 30 phút</span>
-              </a>
-              <a
-                href="#pricing"
-                className="w-full sm:w-auto px-6 py-3.5 bg-blue-50/80 hover:bg-blue-100 text-blue-950 font-bold text-sm rounded-xl border border-blue-200 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-              >
-                <span>Xem bảng giá niêm yết</span>
-                <span>↓</span>
-              </a>
-            </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xl">👉</span>
+                  <div className="text-left">
+                    <p className="text-xs sm:text-sm font-bold leading-tight">
+                      Vuốt sang phải để xem tiếp các mục
+                    </p>
+                    <p className="text-[11px] text-sky-200">
+                      Dịch vụ • Quy trình • Đặt lịch • Bảng giá • Đánh giá
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-sky-300 bg-white/10 px-3 py-1.5 rounded-xl border border-white/20 group-hover:bg-white/20 transition-all shrink-0">
+                  <span>Xem dịch vụ</span>
+                  <span className="text-sm group-hover:translate-x-1 transition-transform">➔</span>
+                </div>
+              </div>
+            )}
 
           </div>
 

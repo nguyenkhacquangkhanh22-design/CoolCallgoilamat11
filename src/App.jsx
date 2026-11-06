@@ -1,8 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { 
-  CheckCircle2, 
-  X, 
-  MessageSquare 
+  Home, 
+  Wrench, 
+  ListOrdered, 
+  CalendarCheck, 
+  Tag, 
+  ShieldCheck, 
+  MapPin, 
+  Star, 
+  HelpCircle,
+  CheckCircle2,
+  X,
+  MessageSquare
 } from 'lucide-react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -17,6 +26,7 @@ import BookingForm from './components/BookingForm';
 import BookingSuccessModal from './components/BookingSuccessModal';
 import FloatingCTA from './components/FloatingCTA';
 import Footer from './components/Footer';
+import { SlideTabs, SideSlideArrows, SlideBottomBar } from './components/SlideNavigation';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/useAuth';
 import AuthModal from './components/AuthModal';
@@ -28,47 +38,101 @@ import DisputeModal from './components/technician/DisputeModal';
 import TechnicianKYCModal from './components/technician/TechnicianKYCModal';
 import { SERVICES } from './data/smartfixData';
 
+const SLIDES = [
+  {
+    id: 'hero',
+    label: 'Trang chủ',
+    title: 'SmartFix Đà Nẵng',
+    icon: Home,
+  },
+  {
+    id: 'services',
+    label: 'Dịch vụ',
+    title: 'Các gói dịch vụ máy lạnh',
+    icon: Wrench,
+  },
+  {
+    id: 'process',
+    label: 'Quy trình',
+    title: 'Quy trình đặt thợ 3 bước',
+    icon: ListOrdered,
+  },
+  {
+    id: 'booking',
+    label: 'Đặt lịch',
+    title: 'Form đặt thợ cấp tốc 30 phút',
+    icon: CalendarCheck,
+  },
+  {
+    id: 'pricing',
+    label: 'Bảng giá',
+    title: 'Bảng giá niêm yết công khai',
+    icon: Tag,
+  },
+  {
+    id: 'why-us',
+    label: 'Ưu điểm',
+    title: 'Tại sao chọn SmartFix',
+    icon: ShieldCheck,
+  },
+  {
+    id: 'coverage',
+    label: 'Khu vực',
+    title: 'Mạng lưới thợ tại Đà Nẵng',
+    icon: MapPin,
+  },
+  {
+    id: 'reviews',
+    label: 'Đánh giá',
+    title: 'Khách hàng đánh giá thực tế',
+    icon: Star,
+  },
+  {
+    id: 'faqs',
+    label: 'Hỏi đáp & LH',
+    title: 'Câu hỏi thường gặp & Liên hệ',
+    icon: HelpCircle,
+  },
+];
+
 function SmartFixApp() {
   const { isGuest, openAuthModal, toast, closeToast } = useAuth();
   const { isTechnicianView, createOrder, openChat, orders } = useOrders();
-  const [activeSection, setActiveSection] = useState('hero');
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedDistrictId, setSelectedDistrictId] = useState('hai-chau');
   const [searchQuery, setSearchQuery] = useState('');
   const [bookingSuccessData, setBookingSuccessData] = useState(null);
 
-  // Smooth scroll to section by ID
-  const scrollToSection = useCallback((id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      const yOffset = -80;
-      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+  const sliderRef = useRef(null);
+  const isProgrammaticScroll = useRef(false);
+
+  // Navigate to slide by index with smooth horizontal animation
+  const goToSlide = useCallback((index) => {
+    if (index < 0 || index >= SLIDES.length) return;
+    setCurrentSlide(index);
+    if (sliderRef.current) {
+      isProgrammaticScroll.current = true;
+      const slideWidth = sliderRef.current.clientWidth;
+      sliderRef.current.scrollTo({
+        left: index * slideWidth,
+        behavior: 'smooth',
+      });
+      setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, 450);
     }
   }, []);
 
-  // Update active section on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const sectionIds = ['hero', 'services', 'process', 'booking', 'pricing', 'why-us', 'coverage', 'reviews', 'faqs'];
-      const scrollPos = window.scrollY + 140;
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPos >= top && scrollPos < top + height) {
-            setActiveSection(id);
-            break;
-          }
-        }
-      }
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // Navigate to slide by section ID
+  const goToSlideById = useCallback((id) => {
+    const foundIndex = SLIDES.findIndex((s) => s.id === id);
+    if (foundIndex !== -1) {
+      goToSlide(foundIndex);
+    }
+  }, [goToSlide]);
 
-  // Handle booking action: Guests are prompted to login/register, customers scroll to form
+  // Handle booking action: Guests are prompted to login/register, customers go to form
   const handleBookingAction = useCallback(() => {
     if (isGuest) {
       openAuthModal({
@@ -76,16 +140,60 @@ function SmartFixApp() {
         message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!'
       });
     } else {
-      scrollToSection('booking');
+      goToSlideById('booking');
     }
-  }, [isGuest, openAuthModal, scrollToSection]);
+  }, [isGuest, openAuthModal, goToSlideById]);
+
+  // Handle native swipe / scroll inside horizontal snap container
+  const handleScroll = (e) => {
+    if (isProgrammaticScroll.current) return;
+    const container = e.currentTarget;
+    const { scrollLeft, clientWidth } = container;
+    if (clientWidth > 0) {
+      const newIndex = Math.round(scrollLeft / clientWidth);
+      if (newIndex >= 0 && newIndex < SLIDES.length && newIndex !== currentSlide) {
+        setCurrentSlide(newIndex);
+      }
+    }
+  };
+
+  // Keyboard navigation (Left / Right Arrow)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+        return;
+      }
+      if (e.key === 'ArrowRight') {
+        goToSlide(currentSlide + 1);
+      } else if (e.key === 'ArrowLeft') {
+        goToSlide(currentSlide - 1);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentSlide, goToSlide]);
+
+  // Handle window resize to prevent slide misalignment
+  useEffect(() => {
+    const handleResize = () => {
+      if (sliderRef.current) {
+        const slideWidth = sliderRef.current.clientWidth;
+        sliderRef.current.scrollTo({
+          left: currentSlide * slideWidth,
+          behavior: 'auto',
+        });
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [currentSlide]);
 
   // When user searches in Hero
   const handleHeroSearch = ({ searchTerm, district }) => {
     setSearchQuery(searchTerm);
     if (district) setSelectedDistrictId(district);
     if (searchTerm.trim()) {
-      scrollToSection('services');
+      goToSlideById('services');
     } else {
       if (isGuest) {
         openAuthModal({
@@ -93,7 +201,7 @@ function SmartFixApp() {
           message: 'Bạn phải đăng ký hoặc đăng nhập tài khoản để đặt thợ hoặc gọi thợ!'
         });
       } else {
-        scrollToSection('booking');
+        goToSlideById('booking');
       }
     }
   };
@@ -110,7 +218,7 @@ function SmartFixApp() {
     const found = SERVICES.find((s) => s.id === serviceId);
     if (found) {
       setSelectedService(found);
-      scrollToSection('booking');
+      goToSlideById('booking');
     }
   };
 
@@ -124,7 +232,7 @@ function SmartFixApp() {
       return;
     }
     setSelectedService(service);
-    scrollToSection('booking');
+    goToSlideById('booking');
   };
 
   // Pricing table "Đặt thợ" clicked
@@ -140,7 +248,7 @@ function SmartFixApp() {
       (s) => s.title.toLowerCase().includes(item.item.toLowerCase().split('(')[0].trim())
     ) || SERVICES[0];
     setSelectedService(matchedService);
-    scrollToSection('booking');
+    goToSlideById('booking');
   };
 
   // District clicked in Coverage section
@@ -153,7 +261,7 @@ function SmartFixApp() {
       });
       return;
     }
-    scrollToSection('booking');
+    goToSlideById('booking');
   };
 
   // Booking Form submitted
@@ -182,98 +290,181 @@ function SmartFixApp() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 antialiased font-sans select-text">
-      {/* 1. Header with navigation & Role Switcher */}
+    <div className="h-screen max-h-screen w-screen flex flex-col bg-slate-50 text-slate-800 antialiased font-sans overflow-hidden select-text">
+      {/* 1. Header with active category & Role Switcher */}
       <Header 
-        activeSlideId={activeSection}
-        onNavigateTo={scrollToSection}
+        activeSlideId={SLIDES[currentSlide]?.id}
+        onNavigateTo={goToSlideById}
         onBookNowClick={handleBookingAction}
       />
 
-      {/* Conditional Rendering: Technician Workspace OR Customer Full Page */}
+      {/* Conditional Rendering: Technician Workspace OR Customer Slide Deck */}
       {isTechnicianView ? (
-        <TechnicianPortal />
+        <div className="flex-1 overflow-y-auto">
+          <TechnicianPortal />
+        </div>
       ) : (
-        <main className="w-full">
-          {/* Section 1: Hero */}
-          <section id="hero">
-            <Hero 
-              onSearchSubmit={handleHeroSearch}
-              onSelectQuickService={handleQuickService}
-            />
-          </section>
+        <>
+          {/* 2. Top Interactive Slide Tabs */}
+          <SlideTabs 
+            slides={SLIDES}
+            currentSlide={currentSlide}
+            onSelectSlide={goToSlide}
+          />
 
-          {/* Section 2: Services Grid */}
-          <section id="services" className="scroll-mt-20">
-            <ServicesGrid 
-              onSelectService={handleSelectServiceFromCard}
-              searchQuery={searchQuery}
-            />
-          </section>
+          {/* 3. Horizontal Swipable Slide Deck */}
+          <main 
+            ref={sliderRef}
+            onScroll={handleScroll}
+            className="w-full flex-1 overflow-x-auto overflow-y-hidden snap-x snap-mandatory flex flex-nowrap no-scrollbar scroll-smooth"
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              scrollSnapType: 'x mandatory',
+            }}
+          >
+            {/* Slide 0: Hero */}
+            <div 
+              id="hero"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <Hero 
+                  onSearchSubmit={handleHeroSearch}
+                  onSelectQuickService={handleQuickService}
+                  onGoNext={() => goToSlide(1)}
+                />
+              </div>
+            </div>
 
-          {/* Section 3: Quy trình 3 bước */}
-          <section id="process" className="scroll-mt-20">
-            <ProcessSteps onStartBooking={handleBookingAction} />
-          </section>
+            {/* Slide 1: Services Grid */}
+            <div 
+              id="services"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <ServicesGrid 
+                  onSelectService={handleSelectServiceFromCard}
+                  searchQuery={searchQuery}
+                />
+              </div>
+            </div>
 
-          {/* Section 4: Form Đặt Lịch Thợ Cấp Tốc */}
-          <section id="booking" className="scroll-mt-20">
-            <BookingForm 
-              selectedServiceFromParent={selectedService}
-              initialDistrict={selectedDistrictId}
-              onBookingSubmit={handleBookingSubmit}
-            />
-          </section>
+            {/* Slide 2: Quy trình 3 bước */}
+            <div 
+              id="process"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <ProcessSteps onStartBooking={() => goToSlideById('booking')} />
+              </div>
+            </div>
 
-          {/* Section 5: Bảng giá niêm yết */}
-          <section id="pricing" className="scroll-mt-20">
-            <PricingTable onSelectPriceItem={handleSelectPriceItem} />
-          </section>
+            {/* Slide 3: Form Đặt Lịch Thợ Cấp Tốc */}
+            <div 
+              id="booking"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <BookingForm 
+                  selectedServiceFromParent={selectedService}
+                  initialDistrict={selectedDistrictId}
+                  onBookingSubmit={handleBookingSubmit}
+                />
+              </div>
+            </div>
 
-          {/* Section 6: Tại sao chọn SmartFix */}
-          <section id="why-us" className="scroll-mt-20">
-            <WhyChooseUs />
-          </section>
+            {/* Slide 4: Bảng giá niêm yết */}
+            <div 
+              id="pricing"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <PricingTable onSelectPriceItem={handleSelectPriceItem} />
+              </div>
+            </div>
 
-          {/* Section 7: Khu vực phủ sóng Đà Nẵng */}
-          <section id="coverage" className="scroll-mt-20">
-            <CoverageDanang onSelectDistrict={handleSelectDistrict} />
-          </section>
+            {/* Slide 5: Tại sao chọn SmartFix */}
+            <div 
+              id="why-us"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <WhyChooseUs />
+              </div>
+            </div>
 
-          {/* Section 8: Khách hàng đánh giá */}
-          <section id="reviews" className="scroll-mt-20">
-            <Testimonials />
-          </section>
+            {/* Slide 6: Khu vực phủ sóng Đà Nẵng */}
+            <div 
+              id="coverage"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <CoverageDanang onSelectDistrict={handleSelectDistrict} />
+              </div>
+            </div>
 
-          {/* Section 9: FAQ & Footer */}
-          <section id="faqs" className="scroll-mt-20">
-            <FAQSection />
-            <Footer 
-              onScrollToTop={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
-              onNavigateTo={scrollToSection} 
-            />
-          </section>
-        </main>
-      )}
+            {/* Slide 7: Khách hàng đánh giá */}
+            <div 
+              id="reviews"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <Testimonials />
+              </div>
+            </div>
 
-      {/* Quick Floating Action Button (Hotline & Book) */}
-      {!isTechnicianView && (
-        <FloatingCTA onBookClick={handleBookingAction} />
-      )}
+            {/* Slide 8: FAQ & Footer */}
+            <div 
+              id="faqs"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <FAQSection />
+                <Footer 
+                  onScrollToTop={() => goToSlide(0)} 
+                  onNavigateTo={goToSlideById} 
+                />
+              </div>
+            </div>
+          </main>
 
-      {/* Customer Quick Chat Floating Pill */}
-      {orders.some(o => ['accepted', 'arrived', 'in_progress', 'completed'].includes(o.status)) && (
-        <button
-          type="button"
-          onClick={() => {
-            const target = orders.find(o => ['accepted', 'arrived', 'in_progress'].includes(o.status)) || orders[0];
-            if (target) openChat(target.id);
-          }}
-          className="fixed bottom-6 left-3 sm:left-6 z-40 bg-gradient-to-r from-blue-900 via-blue-800 to-sky-700 hover:from-blue-800 hover:to-sky-600 text-white px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2 font-bold text-xs cursor-pointer border border-sky-400/40 hover:scale-105 transition-all select-none"
-        >
-          <MessageSquare className="w-4 h-4 text-sky-300 animate-pulse" />
-          <span>💬 Chat với Thợ</span>
-        </button>
+          {/* Desktop Floating Side Navigation Arrows */}
+          <SideSlideArrows 
+            currentSlide={currentSlide}
+            totalSlides={SLIDES.length}
+            onGoToSlide={goToSlide}
+            slides={SLIDES}
+          />
+
+          {/* Bottom Floating Navigation Bar */}
+          <SlideBottomBar 
+            slides={SLIDES}
+            currentSlide={currentSlide}
+            onGoToSlide={goToSlide}
+            onBookNow={handleBookingAction}
+          />
+
+          {/* Quick Floating Hotline / Action Button */}
+          <FloatingCTA 
+            currentSlide={currentSlide}
+            onBookClick={handleBookingAction} 
+          />
+
+          {/* Customer Quick Chat Floating Pill */}
+          {orders.some(o => ['accepted', 'arrived', 'in_progress', 'completed'].includes(o.status)) && (
+            <button
+              type="button"
+              onClick={() => {
+                const target = orders.find(o => ['accepted', 'arrived', 'in_progress'].includes(o.status)) || orders[0];
+                if (target) openChat(target.id);
+              }}
+              className="fixed bottom-18 sm:bottom-18 left-3 sm:left-6 z-40 bg-gradient-to-r from-blue-900 via-blue-800 to-sky-700 hover:from-blue-800 hover:to-sky-600 text-white px-3.5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 font-bold text-xs cursor-pointer border border-sky-400/40 hover:scale-105 transition-all select-none"
+            >
+              <MessageSquare className="w-4 h-4 text-sky-300 animate-pulse" />
+              <span>💬 Chat với Thợ</span>
+            </button>
+          )}
+        </>
       )}
 
       {/* Booking Success Modal Popup */}

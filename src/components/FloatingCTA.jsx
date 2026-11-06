@@ -2,8 +2,10 @@ import React from 'react';
 import { Phone, Wrench } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
 
-export default function FloatingCTA({ onBookClick }) {
+export default function FloatingCTA({ onBookClick, currentSlide = 0 }) {
   const { isGuest, openAuthModal } = useAuth();
+  // If already on booking slide, hide the redundant booking floating button
+  const isBookingSlide = currentSlide === 3;
 
   const handleCall = (e) => {
     if (isGuest) {
@@ -16,7 +18,7 @@ export default function FloatingCTA({ onBookClick }) {
   };
 
   return (
-    <div className="fixed bottom-6 right-3 sm:right-6 z-40 flex flex-col items-end gap-2.5 pointer-events-none select-none">
+    <div className="fixed bottom-16 sm:bottom-16 right-3 sm:right-6 z-30 flex flex-col items-end gap-2 pointer-events-none select-none">
       <div className="pointer-events-auto flex flex-col gap-2 items-end">
         {/* Floating Hotline button */}
         <a
@@ -34,18 +36,20 @@ export default function FloatingCTA({ onBookClick }) {
           </span>
         </a>
 
-        {/* Floating Quick Booking */}
-        <button
-          type="button"
-          onClick={onBookClick}
-          aria-label="Đặt lịch thợ sửa ngay"
-          className="group flex items-center gap-1.5 px-3.5 sm:px-4 py-2.5 rounded-full bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white shadow-xl shadow-blue-900/30 hover:scale-105 transition-all duration-200 cursor-pointer"
-        >
-          <Wrench className="w-4 h-4 text-sky-300 group-hover:rotate-12 transition-transform" />
-          <span className="text-xs font-extrabold hidden sm:inline">
-            Đặt thợ 30 phút
-          </span>
-        </button>
+        {/* Floating Quick Booking (hidden on booking slide) */}
+        {!isBookingSlide && (
+          <button
+            type="button"
+            onClick={onBookClick}
+            aria-label="Đặt lịch thợ sửa ngay"
+            className="group flex items-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-full bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white shadow-xl shadow-blue-900/30 hover:scale-105 transition-all duration-200 cursor-pointer"
+          >
+            <Wrench className="w-4 h-4 text-sky-300 group-hover:rotate-12 transition-transform" />
+            <span className="text-xs font-extrabold hidden sm:inline">
+              Đặt thợ 30 phút
+            </span>
+          </button>
+        )}
       </div>
     </div>
   );

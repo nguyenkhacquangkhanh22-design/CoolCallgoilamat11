@@ -90,6 +90,14 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
           </div>
 
           <div className="flex items-center gap-4 text-xs">
+            <button
+              type="button"
+              onClick={openKycModal}
+              className="text-amber-300 hover:text-amber-200 font-bold flex items-center gap-1 cursor-pointer transition-colors"
+            >
+              <Wrench className="w-3 h-3 text-amber-300" />
+              <span>Đăng ký Đối tác Thợ (Xác thực eKYC)</span>
+            </button>
             <a 
               href="tel:0905888666" 
               onClick={handleCallTechnician}
@@ -185,7 +193,7 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
             </nav>
 
             {/* Right Action buttons */}
-            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               
               {/* User Auth Status Buttons: Đăng ký & Đăng nhập riêng biệt */}
               {isGuest ? (
@@ -219,7 +227,7 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-blue-50/90 border border-blue-200 whitespace-nowrap shrink-0 shadow-xs">
+                <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-blue-50/90 border border-blue-200 whitespace-nowrap shrink-0">
                   <div className="w-7 h-7 rounded-lg bg-blue-900 text-white flex items-center justify-center font-black text-xs shrink-0">
                     {user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'C'}
                   </div>
@@ -240,32 +248,21 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                 </div>
               )}
 
-              {/* The ONLY 'Trở thành Thợ' Button on the entire page */}
-              <button
-                type="button"
-                onClick={openKycModal}
-                className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-amber-400 hover:bg-amber-500 text-amber-950 font-black text-xs sm:text-sm border border-amber-500 shadow-xs transition-all cursor-pointer whitespace-nowrap shrink-0 hover:scale-105"
-                title="Đăng ký hồ sơ xác thực eKYC CCCD để trở thành Thợ chính hãng"
-              >
-                <Wrench className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-amber-950" />
-                <span>Trở thành Thợ</span>
-              </button>
-
               {/* Role Switcher Button: [Khách hàng] ↔ [Cổng Thợ Sửa Chữa] */}
               <button
                 type="button"
                 onClick={() => switchRole(appRole === 'customer' ? 'technician' : 'customer')}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer whitespace-nowrap shrink-0 shadow-xs ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer whitespace-nowrap shrink-0 shadow-sm ${
                   appRole === 'customer'
-                    ? 'bg-blue-900 hover:bg-blue-800 text-white border border-blue-950 hover:scale-105'
+                    ? 'bg-amber-400 hover:bg-amber-500 text-amber-950 border border-amber-500 hover:scale-105'
                     : 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-500 hover:scale-105'
                 }`}
                 title={appRole === 'customer' ? 'Chuyển sang Cổng Thợ Sửa Chữa (Đối tác)' : 'Quay lại giao diện Khách Hàng'}
               >
                 {appRole === 'customer' ? (
                   <>
-                    <Wrench className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-amber-300" />
-                    <span>Cổng Thợ</span>
+                    <Wrench className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-amber-950" />
+                    <span>🛠️ Role Thợ</span>
                     {pendingCount > 0 && (
                       <span className="w-4 h-4 rounded-full bg-rose-600 text-white text-[10px] font-black flex items-center justify-center animate-bounce">
                         {pendingCount}
@@ -275,10 +272,23 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                 ) : (
                   <>
                     <User className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-white" />
-                    <span>Role Khách</span>
+                    <span>👤 Role Khách</span>
                   </>
                 )}
               </button>
+
+                {/* KYC Registration Button for Desktop */}
+                {appRole === 'customer' && (
+                  <button
+                    type="button"
+                    onClick={openKycModal}
+                    className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs border border-amber-300 hover:border-amber-400 transition-all cursor-pointer whitespace-nowrap shrink-0"
+                    title="Đăng ký hồ sơ xác thực eKYC để trở thành Thợ chính hãng"
+                  >
+                    <Wrench className="w-3.5 h-3.5 text-amber-700" />
+                    <span>Đăng ký làm Thợ</span>
+                  </button>
+                )}
 
                 {/* 24/7 Hotline Pill */}
               <a
@@ -491,7 +501,6 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                         logout();
                       }}
                       className="px-3 py-1.5 rounded-lg bg-white border border-rose-200 text-rose-600 font-bold text-xs flex items-center gap-1 shadow-xs cursor-pointer"
-                      title="Đăng xuất"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       <span>Đăng xuất</span>
