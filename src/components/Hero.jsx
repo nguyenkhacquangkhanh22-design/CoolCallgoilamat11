@@ -10,14 +10,11 @@ import {
   Sparkles,
   Award,
   Users,
-  ChevronDown,
-  Wrench
+  ChevronDown
 } from 'lucide-react';
-import { useAuth } from '../context/useAuth';
 import { DANANG_DISTRICTS } from '../data/smartfixData';
 
-export default function Hero({ onSearchSubmit, onSelectQuickService, onGoNext }) {
-  const { openKycModal } = useAuth();
+export default function Hero({ onSearchSubmit, onSelectQuickService }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('hai-chau');
 
@@ -177,54 +174,23 @@ export default function Hero({ onSearchSubmit, onSelectQuickService, onGoNext })
               </div>
             </div>
 
-            {/* Recruitment Card for Technicians */}
-            <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-50 via-amber-100/70 to-sky-50 border-2 border-amber-300 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-left">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-400 text-amber-950 flex items-center justify-center font-bold text-lg shrink-0 shadow-xs">
-                  🛠️
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-black text-amber-950">
-                    Bạn là Thợ điện lạnh muốn nhận đơn?
-                  </p>
-                  <p className="text-[11px] text-amber-900/80">
-                    Thu nhập 25 - 40 triệu/tháng • Nhận đơn trực tiếp qua web • Xác thực eKYC CCCD
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={openKycModal}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:from-amber-800 text-white font-extrabold text-xs shadow-md shadow-amber-900/20 transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center justify-center gap-1.5 hover:scale-105"
+            {/* Quick Action CTAs */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+              <a
+                href="#booking"
+                className="w-full sm:w-auto px-6 py-3.5 bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md shadow-blue-900/25 hover:shadow-lg transition-all cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-200" />
-                <span>Đăng ký làm Thợ ngay (eKYC)</span>
-              </button>
+                <Clock className="w-4 h-4 text-sky-300" />
+                <span>Đặt thợ đến ngay sau 30 phút</span>
+              </a>
+              <a
+                href="#pricing"
+                className="w-full sm:w-auto px-6 py-3.5 bg-blue-50/80 hover:bg-blue-100 text-blue-950 font-bold text-sm rounded-xl border border-blue-200 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              >
+                <span>Xem bảng giá niêm yết</span>
+                <span>↓</span>
+              </a>
             </div>
-
-            {/* Swipe guide banner */}
-            {onGoNext && (
-              <div 
-                onClick={onGoNext}
-                className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-blue-900 via-blue-800 to-sky-700 hover:from-blue-800 hover:to-sky-600 text-white shadow-lg shadow-blue-900/15 flex items-center justify-between gap-3 cursor-pointer group transition-all"
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="text-xl">👉</span>
-                  <div className="text-left">
-                    <p className="text-xs sm:text-sm font-bold leading-tight">
-                      Vuốt sang phải để xem tiếp các mục
-                    </p>
-                    <p className="text-[11px] text-sky-200">
-                      Dịch vụ • Quy trình • Đặt lịch • Bảng giá • Đánh giá
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-sky-300 bg-white/10 px-3 py-1.5 rounded-xl border border-white/20 group-hover:bg-white/20 transition-all shrink-0">
-                  <span>Xem dịch vụ</span>
-                  <span className="text-sm group-hover:translate-x-1 transition-transform">➔</span>
-                </div>
-              </div>
-            )}
 
           </div>
 
