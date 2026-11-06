@@ -23,6 +23,7 @@ import {
   Zap
 } from 'lucide-react';
 import { useAuth } from '../../context/useAuth';
+import { useOrders } from '../../context/OrderContext';
 import { DANANG_DISTRICTS } from '../../data/smartfixData';
 
 export default function TechnicianKYCModal() {
@@ -162,7 +163,7 @@ export default function TechnicianKYCModal() {
     }
 
     setIsSubmitting(true);
-    await registerTechnicianKYC({
+    const res = await registerTechnicianKYC({
       fullName,
       phoneNumber,
       password,
@@ -181,6 +182,9 @@ export default function TechnicianKYCModal() {
       certificatePhoto: certificatePhoto || 'https://images.unsplash.com/photo-1607453998774-d533f65dac99?auto=format&fit=crop&w=500&q=80',
       selfiePhoto: selfiePhoto || 'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&w=400&q=80'
     });
+    if (res?.success && switchRole) {
+      switchRole('technician');
+    }
     setIsSubmitting(false);
   };
 

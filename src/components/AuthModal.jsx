@@ -21,8 +21,10 @@ import {
   Wrench
 } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
+import { useOrders } from '../context/OrderContext';
 
 export default function AuthModal() {
+  const { switchRole } = useOrders();
   const { 
     isAuthModalOpen, 
     authModalMessage, 
@@ -252,6 +254,9 @@ export default function AuthModal() {
     let result;
     if (loginTarget === 'technician') {
       result = await loginTechnician(loginPhone.trim(), loginPassword);
+      if (result.success && switchRole) {
+        switchRole('technician');
+      }
     } else {
       result = await login(loginPhone.trim(), loginPassword);
     }

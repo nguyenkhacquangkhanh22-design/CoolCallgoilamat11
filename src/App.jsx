@@ -97,7 +97,28 @@ const SLIDES = [
 
 function SmartFixApp() {
   const { isGuest, openAuthModal, toast, closeToast } = useAuth();
-  const { isTechnicianView, createOrder, openChat, orders } = useOrders();
+  const { isTechnicianView, createOrder, openChat, orders, switchRole, appRole } = useOrders();
+  const { user } = useAuth();
+
+  // Chỉ cho phép vào Cổng Thợ nếu người dùng đã được xác nhận trở thành thợ
+  const isVerifiedTechnician = Boolean(
+    user?.role === 'technician' ||
+    user?.isVerifiedKyc ||
+    (user?.phoneNumber && (() => {
+      try {
+        const registeredTechs = JSON.parse(localStorage.getItem('coolcall_registered_technicians') || '[]');
+        return registeredTechs.some(t => t.phoneNumber?.replace(/[\s.-]/g, '') === user.phoneNumber.replace(/[\s.-]/g, ''));
+      } catch {
+        return false;
+      }
+    })())
+  );
+
+  useEffect(() => {
+    if (!isVerifiedTechnician && appRole === 'technician') {
+      switchRole('customer');
+    }
+  }, [isVerifiedTechnician, appRole, switchRole]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedDistrictId, setSelectedDistrictId] = useState('hai-chau');
@@ -299,7 +320,7 @@ function SmartFixApp() {
       />
 
       {/* Conditional Rendering: Technician Workspace OR Customer Slide Deck */}
-      {isTechnicianView ? (
+      {isTechnicianView && isVerifiedTechnician ? (
         <div className="flex-1 overflow-y-auto">
           <TechnicianPortal />
         </div>

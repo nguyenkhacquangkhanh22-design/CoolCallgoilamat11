@@ -25,6 +25,20 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Chỉ hiện Role Thợ khi đã được xác nhận trở thành thợ (đã làm eKYC hoặc đăng nhập tài khoản Thợ)
+  const isVerifiedTechnician = Boolean(
+    user?.role === 'technician' ||
+    user?.isVerifiedKyc ||
+    (user?.phoneNumber && (() => {
+      try {
+        const registeredTechs = JSON.parse(localStorage.getItem('coolcall_registered_technicians') || '[]');
+        return registeredTechs.some(t => t.phoneNumber?.replace(/[\s.-]/g, '') === user.phoneNumber.replace(/[\s.-]/g, ''));
+      } catch {
+        return false;
+      }
+    })())
+  );
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -248,47 +262,47 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                 </div>
               )}
 
-              {/* Role Switcher Button: [Khách hàng] ↔ [Cổng Thợ Sửa Chữa] */}
-              <button
-                type="button"
-                onClick={() => switchRole(appRole === 'customer' ? 'technician' : 'customer')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer whitespace-nowrap shrink-0 shadow-sm ${
-                  appRole === 'customer'
-                    ? 'bg-amber-400 hover:bg-amber-500 text-amber-950 border border-amber-500 hover:scale-105'
-                    : 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-500 hover:scale-105'
-                }`}
-                title={appRole === 'customer' ? 'Chuyển sang Cổng Thợ Sửa Chữa (Đối tác)' : 'Quay lại giao diện Khách Hàng'}
-              >
-                {appRole === 'customer' ? (
-                  <>
-                    <Wrench className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-amber-950" />
-                    <span>🛠️ Role Thợ</span>
-                    {pendingCount > 0 && (
-                      <span className="w-4 h-4 rounded-full bg-rose-600 text-white text-[10px] font-black flex items-center justify-center animate-bounce">
-                        {pendingCount}
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <User className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-white" />
-                    <span>👤 Role Khách</span>
-                  </>
-                )}
-              </button>
-
-                {/* KYC Registration Button for Desktop */}
-                {appRole === 'customer' && (
-                  <button
-                    type="button"
-                    onClick={openKycModal}
-                    className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs border border-amber-300 hover:border-amber-400 transition-all cursor-pointer whitespace-nowrap shrink-0"
-                    title="Đăng ký hồ sơ xác thực eKYC để trở thành Thợ chính hãng"
-                  >
-                    <Wrench className="w-3.5 h-3.5 text-amber-700" />
-                    <span>Đăng ký làm Thợ</span>
-                  </button>
-                )}
+              {/* Role Switcher Button: CHỈ HIỆN KHI ĐÃ ĐƯỢC XÁC NHẬN TRỞ THÀNH THỢ */}
+              {isVerifiedTechnician ? (
+                <button
+                  type="button"
+                  onClick={() => switchRole(appRole === 'customer' ? 'technician' : 'customer')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer whitespace-nowrap shrink-0 shadow-sm ${
+                    appRole === 'customer'
+                      ? 'bg-amber-400 hover:bg-amber-500 text-amber-950 border border-amber-500 hover:scale-105'
+                      : 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-500 hover:scale-105'
+                  }`}
+                  title={appRole === 'customer' ? 'Chuyển sang Cổng Thợ Sửa Chữa (Đối tác)' : 'Quay lại giao diện Khách Hàng'}
+                >
+                  {appRole === 'customer' ? (
+                    <>
+                      <Wrench className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-amber-950" />
+                      <span>🛠️ Role Thợ</span>
+                      {pendingCount > 0 && (
+                        <span className="w-4 h-4 rounded-full bg-rose-600 text-white text-[10px] font-black flex items-center justify-center animate-bounce">
+                          {pendingCount}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <User className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-white" />
+                      <span>👤 Role Khách</span>
+                    </>
+                  )}
+                </button>
+              ) : (
+                /* Chưa được xác nhận trở thành thợ: Chỉ hiển thị nút Đăng ký làm Thợ để gửi hồ sơ eKYC */
+                <button
+                  type="button"
+                  onClick={openKycModal}
+                  className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs border border-amber-300 hover:border-amber-400 transition-all cursor-pointer whitespace-nowrap shrink-0 hover:scale-105 shadow-xs"
+                  title="Đăng ký hồ sơ xác thực eKYC CCCD để trở thành Thợ chính thức"
+                >
+                  <Wrench className="w-3.5 h-3.5 text-amber-700" />
+                  <span>Đăng ký làm Thợ</span>
+                </button>
+              )}
 
                 {/* 24/7 Hotline Pill */}
               <a
@@ -407,49 +421,50 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
               </button>
 
               <div className="pt-4 border-t border-slate-100 flex flex-col gap-2">
-                {/* Mobile Role Switcher Pill */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    switchRole(appRole === 'customer' ? 'technician' : 'customer');
-                  }}
-                  className={`w-full py-2.5 px-3 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 border shadow-xs transition-all cursor-pointer ${
-                    appRole === 'customer'
-                      ? 'bg-amber-400 text-amber-950 border-amber-500'
-                      : 'bg-emerald-600 text-white border-emerald-500'
-                  }`}
-                >
-                  {appRole === 'customer' ? (
-                    <>
-                      <Wrench className="w-4 h-4" />
-                      <span>🛠️ Chuyển sang Cổng Thợ Sửa Chữa (Nhận đơn)</span>
-                      {pendingCount > 0 && (
-                        <span className="w-4 h-4 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center">
-                          {pendingCount}
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <User className="w-4 h-4" />
-                      <span>👤 Quay lại giao diện Khách Hàng (Đặt thợ)</span>
-                    </>
-                  )}
-                </button>
-
-                {/* Mobile KYC Registration Button */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    openKycModal();
-                  }}
-                  className="w-full py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-amber-300 shadow-xs cursor-pointer"
-                >
-                  <Wrench className="w-4 h-4 text-amber-600" />
-                  <span>🪪 Đăng ký làm Thợ CoolCall (Xác thực eKYC)</span>
-                </button>
+                {/* Mobile Role Switcher Pill: CHỈ HIỆN KHI ĐÃ ĐƯỢC XÁC NHẬN TRỞ THÀNH THỢ */}
+                {isVerifiedTechnician ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      switchRole(appRole === 'customer' ? 'technician' : 'customer');
+                    }}
+                    className={`w-full py-2.5 px-3 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 border shadow-xs transition-all cursor-pointer ${
+                      appRole === 'customer'
+                        ? 'bg-amber-400 text-amber-950 border-amber-500'
+                        : 'bg-emerald-600 text-white border-emerald-500'
+                    }`}
+                  >
+                    {appRole === 'customer' ? (
+                      <>
+                        <Wrench className="w-4 h-4" />
+                        <span>🛠️ Chuyển sang Cổng Thợ Sửa Chữa (Nhận đơn)</span>
+                        {pendingCount > 0 && (
+                          <span className="w-4 h-4 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center">
+                            {pendingCount}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <User className="w-4 h-4" />
+                        <span>👤 Quay lại giao diện Khách Hàng (Đặt thợ)</span>
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      openKycModal();
+                    }}
+                    className="w-full py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-amber-300 shadow-xs cursor-pointer"
+                  >
+                    <Wrench className="w-4 h-4 text-amber-600" />
+                    <span>🪪 Đăng ký làm Thợ CoolCall (Xác thực eKYC)</span>
+                  </button>
+                )}
 
                 {/* Mobile Auth buttons: Đăng ký & Đăng nhập riêng biệt */}
                 {isGuest ? (
