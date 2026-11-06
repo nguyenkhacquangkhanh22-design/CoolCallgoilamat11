@@ -17,7 +17,8 @@ import {
   Inbox,
   LogIn,
   Smartphone,
-  MessageSquare
+  MessageSquare,
+  Wrench
 } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
 
@@ -36,7 +37,9 @@ export default function AuthModal() {
     sendGoogleOtp,
     verifyGoogleOtp,
     resendGoogleOtp,
-    login
+    login,
+    loginTechnician,
+    openKycModal
   } = useAuth();
 
   // Active Tab:
@@ -44,6 +47,7 @@ export default function AuthModal() {
   // If login: 'login' | 'google'
   const defaultTab = authMode === 'login' ? 'login' : 'phone-register';
   const [activeTab, setActiveTab] = useState(initialAuthTab || defaultTab);
+  const [loginTarget, setLoginTarget] = useState('customer'); // 'customer' | 'technician'
   const [prevTab, setPrevTab] = useState(initialAuthTab);
   if (initialAuthTab !== prevTab) {
     setPrevTab(initialAuthTab);
@@ -229,13 +233,13 @@ export default function AuthModal() {
     }
   };
 
-  // 5. Normal Phone Login
+  // 5. Normal Login (Customer or Technician)
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
 
     if (!loginPhone.trim()) {
-      setErrorMsg('Vui lòng nhập số điện thoại');
+      setErrorMsg(loginTarget === 'technician' ? 'Vui lòng nhập SĐT hoặc Mã số thợ' : 'Vui lòng nhập số điện thoại');
       return;
     }
 
@@ -245,12 +249,23 @@ export default function AuthModal() {
     }
 
     setIsSubmitting(true);
-    const result = await login(loginPhone.trim(), loginPassword);
+    let result;
+    if (loginTarget === 'technician') {
+      result = await loginTechnician(loginPhone.trim(), loginPassword);
+    } else {
+      result = await login(loginPhone.trim(), loginPassword);
+    }
     setIsSubmitting(false);
 
     if (!result.success) {
       setErrorMsg(result.message);
     }
+  };
+
+  const handleFillDemoTech = () => {
+    setLoginTarget('technician');
+    setLoginPhone('0905888666');
+    setLoginPassword('123456');
   };
 
   return (
@@ -739,23 +754,76 @@ export default function AuthModal() {
             )}
 
             {/* ========================================================================= */}
-            {/* LUỒNG 3: ĐĂNG NHẬP BẰNG SĐT & MẬT KHẨU (KHI Ở CHẾ ĐỘ ĐĂNG NHẬP)           */}
+            {/* LUỒNG 3: ĐĂNG NHẬP (KHÁCH HÀNG HOẶC THỢ KỸ THUẬT)                         */}
             {/* ========================================================================= */}
             {!isRegisterMode && activeTab === 'login' && (
               <form onSubmit={handleLoginSubmit} className="space-y-4">
+                
+                {/* Target Role Selector Pill */}
+                <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-slate-100 text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLoginTarget('customer');
+                      setErrorMsg('');
+                    }}
+                    className={`py-2 px-3 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      loginTarget === 'customer'
+                        ? 'bg-white text-blue-950 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <User className="w-3.5 h-3.5 text-blue-700" />
+                    <span>Khách Hàng</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLoginTarget('technician');
+                      setErrorMsg('');
+                    }}
+                    className={`py-2 px-3 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      loginTarget === 'technician'
+                        ? 'bg-amber-400 text-amber-950 shadow-xs font-black'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <Wrench className="w-3.5 h-3.5 text-amber-900" />
+                    <span>Thợ Sửa Chữa</span>
+                  </button>
+                </div>
+
+                {/* Technician Quick Demo Account Banner */}
+                {loginTarget === 'technician' && (
+                  <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-950 flex items-center justify-between">
+                    <div>
+                      <span className="font-bold block">Tài khoản thợ mẫu:</span>
+                      <span className="text-[11px] text-amber-900 font-mono">0905.888.666 / 123456</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleFillDemoTech}
+                      className="px-2.5 py-1 rounded-lg bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold text-[11px] cursor-pointer shadow-xs"
+                    >
+                      ⚡ Điền nhanh
+                    </button>
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Số điện thoại <span className="text-rose-500">*</span>
+                    {loginTarget === 'technician' ? 'Số điện thoại hoặc Mã số thợ' : 'Số điện thoại'} <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                      <Phone className="w-4 h-4" />
+                      {loginTarget === 'technician' ? <Wrench className="w-4 h-4 text-amber-600" /> : <Phone className="w-4 h-4" />}
                     </div>
                     <input
-                      type="tel"
+                      type="text"
                       value={loginPhone}
                       onChange={(e) => setLoginPhone(e.target.value)}
-                      placeholder="VD: 0905 123 456"
+                      placeholder={loginTarget === 'technician' ? "VD: 0905888666 hoặc THO-ĐN-08" : "VD: 0905 123 456"}
                       className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-800 focus:bg-white"
                     />
                   </div>
@@ -789,18 +857,57 @@ export default function AuthModal() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 px-4 rounded-xl bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white font-bold text-sm shadow-md shadow-blue-900/20 hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70"
+                  className={`w-full py-3.5 px-4 rounded-xl text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 ${
+                    loginTarget === 'technician'
+                      ? 'bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 shadow-amber-900/20'
+                      : 'bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white shadow-blue-900/20'
+                  }`}
                 >
                   {isSubmitting ? (
                     <span>Đang đăng nhập...</span>
                   ) : (
                     <>
-                      <span>Đăng nhập & Tiếp tục</span>
+                      <span>{loginTarget === 'technician' ? 'Đăng nhập vào Cổng Thợ' : 'Đăng nhập & Tiếp tục'}</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
                 </button>
+
+                {/* Link to KYC Technician Registration */}
+                <div className="pt-2 text-center">
+                  <button
+                    type="button"
+                    onClick={openKycModal}
+                    className="text-xs font-bold text-amber-800 hover:text-amber-950 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <Wrench className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Bạn là Thợ điện lạnh? Đăng ký làm Đối tác Thợ (Xác thực eKYC)</span>
+                  </button>
+                </div>
               </form>
+            )}
+
+            {/* Registration Mode bottom banner for Technician eKYC */}
+            {isRegisterMode && (
+              <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-50 via-amber-100/60 to-blue-50 border border-amber-300 flex items-center justify-between gap-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-amber-400 text-amber-950 flex items-center justify-center shrink-0">
+                    <Wrench className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-amber-950 block">Bạn là Thợ muốn nhận việc?</span>
+                    <span className="text-[11px] text-slate-600">Đăng ký đối tác xác thực CCCD & Bằng cấp</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={openKycModal}
+                  className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-amber-950 font-black text-xs cursor-pointer shadow-xs whitespace-nowrap"
+                >
+                  Đăng ký eKYC
+                </button>
+              </div>
             )}
 
             {/* Bảo mật cam kết */}

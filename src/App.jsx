@@ -35,6 +35,7 @@ import TechnicianPortal from './components/technician/TechnicianPortal';
 import NewOrderAlertModal from './components/technician/NewOrderAlertModal';
 import LiveChatModal from './components/technician/LiveChatModal';
 import DisputeModal from './components/technician/DisputeModal';
+import TechnicianKYCModal from './components/technician/TechnicianKYCModal';
 import { SERVICES } from './data/smartfixData';
 
 const SLIDES = [
@@ -506,6 +507,9 @@ function SmartFixApp() {
 
       {/* Authentication Modal for Guest to Register / Login */}
       <AuthModal />
+
+      {/* Technician eKYC Registration Modal (CCCD, Certificates, Face Match) */}
+      <TechnicianKYCModal />
     </div>
   );
 }

@@ -26,6 +26,9 @@ export function AuthProvider({ children }) {
       const savedUser = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('coolcall_auth_user');
       if (savedUser) {
         const parsed = JSON.parse(savedUser);
+        if (parsed?.role === 'technician') {
+          return 'technician';
+        }
         if (parsed && (parsed.phoneNumber || parsed.email)) {
           return 'customer';
         }
@@ -40,6 +43,14 @@ export function AuthProvider({ children }) {
   const [authModalMessage, setAuthModalMessage] = useState('');
   const [authMode, setAuthMode] = useState('register'); // 'register' | 'login'
   const [initialAuthTab, setInitialAuthTab] = useState('phone-register'); // 'phone-register' | 'google-register' | 'login' | 'google'
+
+  // KYC Modal State
+  const [isKycModalOpen, setIsKycModalOpen] = useState(false);
+  const openKycModal = () => {
+    setIsAuthModalOpen(false);
+    setIsKycModalOpen(true);
+  };
+  const closeKycModal = () => setIsKycModalOpen(false);
 
   // Google OTP State
   const [googleOtpState, setGoogleOtpState] = useState(null);
@@ -428,7 +439,107 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // 4. Logout back to Guest role
+  // 4. Technician Login with Phone/TechId & Password
+  const loginTechnician = async (identifier, password) => {
+    const cleanId = (identifier || '').trim().replace(/[\s.-]/g, '');
+
+    // Default demo technician: 0905888666 or THO-ĐN-08, password 123456
+    if ((cleanId === '0905888666' || cleanId.toUpperCase() === 'THO-ĐN-08') && password === '123456') {
+      const techUser = {
+        id: 'THO-ĐN-08',
+        fullName: 'Nguyễn Văn Hùng',
+        phoneNumber: '0905888666',
+        role: 'technician',
+        station: 'Trạm Hải Châu - Thanh Khê (Đà Nẵng)',
+        rating: 4.9,
+        experienceYears: '6 năm',
+        isVerifiedKyc: true,
+        avatar: 'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&w=150&q=80'
+      };
+      setUser(techUser);
+      setRole('technician');
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(techUser));
+      closeAuthModal();
+      showToast('🎉 Chào mừng Kỹ thuật viên Nguyễn Văn Hùng đã đăng nhập vào Cổng Thợ!', 'success');
+      return { success: true };
+    }
+
+    // Check custom registered technicians from localStorage
+    const registeredTechs = JSON.parse(localStorage.getItem('coolcall_registered_technicians') || '[]');
+    const matched = registeredTechs.find(t => 
+      (t.phoneNumber.replace(/[\s.-]/g, '') === cleanId || t.id.toUpperCase() === cleanId.toUpperCase()) && 
+      t.password === password
+    );
+
+    if (matched) {
+      const techUser = {
+        ...matched,
+        role: 'technician'
+      };
+      setUser(techUser);
+      setRole('technician');
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(techUser));
+      closeAuthModal();
+      showToast(`🎉 Chào mừng Kỹ thuật viên ${techUser.fullName} đã đăng nhập thành công!`, 'success');
+      return { success: true };
+    }
+
+    return { 
+      success: false, 
+      message: 'Mã số thợ hoặc mật khẩu không chính xác. (Bạn có thể dùng tài khoản mẫu: 0905888666 / 123456)' 
+    };
+  };
+
+  // 5. Register Customer as Technician through full eKYC process
+  const registerTechnicianKYC = async (kycData) => {
+    const newTechId = 'THO-ĐN-' + String(Math.floor(10 + Math.random() * 90));
+    const newTech = {
+      id: newTechId,
+      fullName: kycData.fullName,
+      phoneNumber: kycData.phoneNumber,
+      password: kycData.password || '123456',
+      email: kycData.email || 'tho.coolcall@gmail.com',
+      address: kycData.address,
+      district: kycData.district,
+      experienceYears: kycData.experienceYears,
+      previousWorkplace: kycData.previousWorkplace,
+      specialties: kycData.specialties,
+      acBrands: kycData.acBrands,
+      cccdNumber: kycData.cccdNumber,
+      cccdFront: kycData.cccdFront,
+      cccdBack: kycData.cccdBack,
+      certificateName: kycData.certificateName,
+      certificateIssuer: kycData.certificateIssuer,
+      certificateYear: kycData.certificateYear,
+      certificatePhoto: kycData.certificatePhoto,
+      selfiePhoto: kycData.selfiePhoto,
+      faceMatchScore: '98.6%',
+      isVerifiedKyc: true,
+      verifiedAt: new Date().toISOString(),
+      role: 'technician',
+      rating: 5.0,
+      avatar: kycData.selfiePhoto || 'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&w=150&q=80'
+    };
+
+    const registeredTechs = JSON.parse(localStorage.getItem('coolcall_registered_technicians') || '[]');
+    const existingIdx = registeredTechs.findIndex(t => t.phoneNumber === kycData.phoneNumber);
+    if (existingIdx >= 0) {
+      registeredTechs[existingIdx] = newTech;
+    } else {
+      registeredTechs.push(newTech);
+    }
+    localStorage.setItem('coolcall_registered_technicians', JSON.stringify(registeredTechs));
+
+    setUser(newTech);
+    setRole('technician');
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newTech));
+    closeKycModal();
+    showToast(`🎉 Hồ sơ KYC đã được phê duyệt! Chúc mừng bạn đã trở thành Thợ Kỹ Thuật CoolCall (Mã: ${newTechId}). Bạn có thể nhận cuốc ngay!`, 'success');
+
+    return { success: true, technician: newTech };
+  };
+
+  // 6. Logout back to Guest role
   const logout = () => {
     setUser(null);
     setRole('guest');
@@ -443,10 +554,14 @@ export function AuthProvider({ children }) {
         role,
         isGuest: role === 'guest',
         isCustomer: role === 'customer',
+        isTechnician: role === 'technician',
         isAuthModalOpen,
         authModalMessage,
         authMode,
         initialAuthTab,
+        isKycModalOpen,
+        openKycModal,
+        closeKycModal,
         googleOtpState,
         phoneOtpState,
         simulatedSmsToast,
@@ -462,6 +577,8 @@ export function AuthProvider({ children }) {
         resendGoogleOtp,
         login,
         register,
+        loginTechnician,
+        registerTechnicianKYC,
         logout,
         showToast,
         closeToast

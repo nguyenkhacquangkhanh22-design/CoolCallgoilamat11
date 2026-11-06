@@ -20,7 +20,7 @@ import { useAuth } from '../context/useAuth';
 import { useOrders } from '../context/OrderContext';
 
 export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavigateTo }) {
-  const { user, isGuest, openAuthModal, logout } = useAuth();
+  const { user, isGuest, openAuthModal, logout, openKycModal } = useAuth();
   const { appRole, switchRole, pendingCount } = useOrders();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -90,9 +90,14 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
           </div>
 
           <div className="flex items-center gap-4 text-xs">
-            <span className="hidden sm:inline text-amber-300 font-medium">
-              🎁 Ưu đãi: Giảm 10% khi vệ sinh từ 2 máy
-            </span>
+            <button
+              type="button"
+              onClick={openKycModal}
+              className="text-amber-300 hover:text-amber-200 font-bold flex items-center gap-1 cursor-pointer transition-colors"
+            >
+              <Wrench className="w-3 h-3 text-amber-300" />
+              <span>Đăng ký Đối tác Thợ (Xác thực eKYC)</span>
+            </button>
             <a 
               href="tel:0905888666" 
               onClick={handleCallTechnician}
@@ -272,7 +277,20 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                 )}
               </button>
 
-              {/* 24/7 Hotline Pill */}
+                {/* KYC Registration Button for Desktop */}
+                {appRole === 'customer' && (
+                  <button
+                    type="button"
+                    onClick={openKycModal}
+                    className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs border border-amber-300 hover:border-amber-400 transition-all cursor-pointer whitespace-nowrap shrink-0"
+                    title="Đăng ký hồ sơ xác thực eKYC để trở thành Thợ chính hãng"
+                  >
+                    <Wrench className="w-3.5 h-3.5 text-amber-700" />
+                    <span>Đăng ký làm Thợ</span>
+                  </button>
+                )}
+
+                {/* 24/7 Hotline Pill */}
               <a
                 href="tel:0905888666"
                 onClick={handleCallTechnician}
@@ -418,6 +436,19 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                       <span>👤 Quay lại giao diện Khách Hàng (Đặt thợ)</span>
                     </>
                   )}
+                </button>
+
+                {/* Mobile KYC Registration Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    openKycModal();
+                  }}
+                  className="w-full py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-amber-300 shadow-xs cursor-pointer"
+                >
+                  <Wrench className="w-4 h-4 text-amber-600" />
+                  <span>🪪 Đăng ký làm Thợ CoolCall (Xác thực eKYC)</span>
                 </button>
 
                 {/* Mobile Auth buttons: Đăng ký & Đăng nhập riêng biệt */}
