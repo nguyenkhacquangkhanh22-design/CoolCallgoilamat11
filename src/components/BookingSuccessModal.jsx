@@ -6,12 +6,16 @@ import {
   Check, 
   X, 
   ShieldCheck, 
-  Wrench
+  Wrench,
+  MessageSquare,
+  ArrowRight
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useOrders } from '../context/OrderContext';
 
 export default function BookingSuccessModal({ booking, onClose }) {
   const [copied, setCopied] = useState(false);
+  const { openChat, switchRole } = useOrders();
 
   useEffect(() => {
     // Fire confetti effect
@@ -32,6 +36,16 @@ export default function BookingSuccessModal({ booking, onClose }) {
     navigator.clipboard.writeText(booking.bookingCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleOpenChat = () => {
+    onClose();
+    openChat(booking.bookingCode);
+  };
+
+  const handleSwitchToTechnician = () => {
+    onClose();
+    switchRole('technician');
   };
 
   return (
@@ -57,7 +71,7 @@ export default function BookingSuccessModal({ booking, onClose }) {
                 Đặt lịch thành công!
               </span>
               <h3 className="text-xl font-black text-white">
-                SmartFix Đã Tiếp Nhận Yêu Cầu
+                CoolCall Đã Tiếp Nhận Yêu Cầu
               </h3>
             </div>
           </div>
@@ -72,17 +86,18 @@ export default function BookingSuccessModal({ booking, onClose }) {
               <button
                 type="button"
                 onClick={handleCopyCode}
-                className="p-1 rounded hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
-                title="Sao chép mã"
+                className="p-1 rounded bg-white/10 hover:bg-white/20 text-white text-[10px] flex items-center gap-1 transition-colors cursor-pointer"
+                title="Sao chép mã đơn"
               >
-                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copied ? 'Đã chép' : 'Chép'}</span>
               </button>
             </div>
           </div>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-5">
+        <div className="p-6 space-y-4">
           
           {/* Dispatch Notice Box */}
           <div className="p-4 rounded-2xl bg-blue-50/80 border border-blue-200 flex items-start gap-3">
@@ -91,16 +106,16 @@ export default function BookingSuccessModal({ booking, onClose }) {
             </div>
             <div className="text-xs">
               <div className="font-bold text-blue-950 text-sm mb-0.5">
-                Kỹ thuật viên đang di chuyển
+                Kỹ thuật viên đang tiếp nhận đơn
               </div>
               <p className="text-slate-600 leading-relaxed">
-                Thợ <strong className="text-blue-900">{booking.technician.name}</strong> sẽ gọi điện thoại cho bạn trước 5 - 10 phút. Dự kiến có mặt: <strong className="text-emerald-700">{booking.technician.estArrival}</strong>.
+                Đơn hàng đã được phát đến mạng lưới thợ khu vực của bạn. Thợ sẽ liên hệ hoặc chat trực tiếp với bạn ngay!
               </p>
             </div>
           </div>
 
           {/* Information Details */}
-          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2.5 text-xs">
+          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2 text-xs">
             <div className="flex justify-between py-1 border-b border-slate-200/60">
               <span className="text-slate-500">Khách hàng:</span>
               <strong className="text-slate-900">{booking.fullName} — {booking.phoneNumber}</strong>
@@ -126,36 +141,44 @@ export default function BookingSuccessModal({ booking, onClose }) {
               <span className="text-blue-900 font-semibold">{booking.scheduleType}</span>
             </div>
 
-            <div className="flex justify-between py-1 pt-2">
+            <div className="flex justify-between py-1 pt-1">
               <span className="text-slate-700 font-bold">Tạm tính ước lượng:</span>
               <span className="text-base font-black text-blue-950">
-                {booking.estimatedTotal.toLocaleString('vi-VN')}đ
+                {Number(booking.estimatedTotal).toLocaleString('vi-VN')}đ
               </span>
             </div>
           </div>
 
-          {/* Trust Guarantees in Dialog */}
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 text-emerald-900 text-xs border border-emerald-100">
-            <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
-            <span>Cam kết thợ kiểm tra miễn phí, báo giá trước và dọn dẹp sạch sẽ trước khi rời đi.</span>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <a
-              href="tel:0905888666"
-              className="flex-1 py-3 px-4 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md shadow-blue-900/20"
+          {/* Action Buttons: Chat trực tiếp & Switch to Tech */}
+          <div className="space-y-2 pt-1">
+            <button
+              type="button"
+              onClick={handleOpenChat}
+              className="w-full py-3 px-4 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-blue-900/20 transition-all cursor-pointer"
             >
-              <Phone className="w-4 h-4 text-sky-300" />
-              <span>Gọi hotline hỗ trợ ngay</span>
-            </a>
+              <MessageSquare className="w-4 h-4 text-sky-300" />
+              <span>💬 Mở khung chat trực tiếp với thợ</span>
+            </button>
 
             <button
               type="button"
-              onClick={onClose}
-              className="py-3 px-5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition-colors cursor-pointer"
+              onClick={handleSwitchToTechnician}
+              className="w-full py-2.5 px-4 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
-              Hoàn tất
+              <Wrench className="w-3.5 h-3.5 text-amber-600" />
+              <span>🛠️ Thử đóng vai Thợ để xem thông báo & nhận đơn này</span>
+              <ArrowRight className="w-3.5 h-3.5 text-amber-700" />
+            </button>
+          </div>
+
+          {/* Close button */}
+          <div className="pt-2 text-center">
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-xs text-slate-500 hover:text-slate-800 font-semibold cursor-pointer"
+            >
+              Đóng cửa sổ
             </button>
           </div>
 

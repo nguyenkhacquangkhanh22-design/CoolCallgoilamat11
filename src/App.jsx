@@ -10,7 +10,8 @@ import {
   Star, 
   HelpCircle,
   CheckCircle2,
-  X
+  X,
+  MessageSquare
 } from 'lucide-react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -29,6 +30,11 @@ import { SlideTabs, SideSlideArrows, SlideBottomBar } from './components/SlideNa
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/useAuth';
 import AuthModal from './components/AuthModal';
+import { OrderProvider, useOrders } from './context/OrderContext';
+import TechnicianPortal from './components/technician/TechnicianPortal';
+import NewOrderAlertModal from './components/technician/NewOrderAlertModal';
+import LiveChatModal from './components/technician/LiveChatModal';
+import DisputeModal from './components/technician/DisputeModal';
 import { SERVICES } from './data/smartfixData';
 
 const SLIDES = [
@@ -90,6 +96,7 @@ const SLIDES = [
 
 function SmartFixApp() {
   const { isGuest, openAuthModal, toast, closeToast } = useAuth();
+  const { isTechnicianView, createOrder, openChat, orders } = useOrders();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedDistrictId, setSelectedDistrictId] = useState('hai-chau');
@@ -259,161 +266,205 @@ function SmartFixApp() {
   // Booking Form submitted
   const handleBookingSubmit = (data) => {
     setBookingSuccessData(data);
+
+    // Create order and trigger live notification to technician portal
+    createOrder({
+      fullName: data.fullName,
+      phoneNumber: data.phoneNumber,
+      district: data.district,
+      districtName: data.districtName,
+      addressDetail: data.addressDetail,
+      serviceTitle: data.serviceName || data.serviceTitle,
+      serviceId: data.serviceId,
+      acType: data.acType,
+      acBrand: data.acBrand,
+      acQuantity: data.acQuantity,
+      issueDescription: data.issueDescription,
+      scheduleType: data.scheduleType,
+      appointmentDate: data.appointmentDate,
+      appointmentSlot: data.appointmentSlot,
+      estimatedTotal: data.estimatedTotal,
+      customerNote: data.customerNote
+    });
   };
 
   return (
     <div className="h-screen max-h-screen w-screen flex flex-col bg-slate-50 text-slate-800 antialiased font-sans overflow-hidden select-text">
-      {/* 1. Header with active category feedback */}
+      {/* 1. Header with active category & Role Switcher */}
       <Header 
         activeSlideId={SLIDES[currentSlide]?.id}
         onNavigateTo={goToSlideById}
         onBookNowClick={handleBookingAction}
       />
 
-      {/* 2. Top Interactive Slide Tabs */}
-      <SlideTabs 
-        slides={SLIDES}
-        currentSlide={currentSlide}
-        onSelectSlide={goToSlide}
-      />
-
-      {/* 3. Horizontal Swipable Slide Deck */}
-      <main 
-        ref={sliderRef}
-        onScroll={handleScroll}
-        className="w-full flex-1 overflow-x-auto overflow-y-hidden snap-x snap-mandatory flex flex-nowrap no-scrollbar scroll-smooth"
-        style={{
-          WebkitOverflowScrolling: 'touch',
-          scrollSnapType: 'x mandatory',
-        }}
-      >
-        {/* Slide 0: Hero */}
-        <div 
-          id="hero"
-          className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
-        >
-          <div className="min-h-full pb-24 sm:pb-28">
-            <Hero 
-              onSearchSubmit={handleHeroSearch}
-              onSelectQuickService={handleQuickService}
-              onGoNext={() => goToSlide(1)}
-            />
-          </div>
+      {/* Conditional Rendering: Technician Workspace OR Customer Slide Deck */}
+      {isTechnicianView ? (
+        <div className="flex-1 overflow-y-auto">
+          <TechnicianPortal />
         </div>
+      ) : (
+        <>
+          {/* 2. Top Interactive Slide Tabs */}
+          <SlideTabs 
+            slides={SLIDES}
+            currentSlide={currentSlide}
+            onSelectSlide={goToSlide}
+          />
 
-        {/* Slide 1: Services Grid */}
-        <div 
-          id="services"
-          className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
-        >
-          <div className="min-h-full pb-24 sm:pb-28">
-            <ServicesGrid 
-              onSelectService={handleSelectServiceFromCard}
-              searchQuery={searchQuery}
-            />
-          </div>
-        </div>
+          {/* 3. Horizontal Swipable Slide Deck */}
+          <main 
+            ref={sliderRef}
+            onScroll={handleScroll}
+            className="w-full flex-1 overflow-x-auto overflow-y-hidden snap-x snap-mandatory flex flex-nowrap no-scrollbar scroll-smooth"
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              scrollSnapType: 'x mandatory',
+            }}
+          >
+            {/* Slide 0: Hero */}
+            <div 
+              id="hero"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <Hero 
+                  onSearchSubmit={handleHeroSearch}
+                  onSelectQuickService={handleQuickService}
+                  onGoNext={() => goToSlide(1)}
+                />
+              </div>
+            </div>
 
-        {/* Slide 2: Quy trình 3 bước */}
-        <div 
-          id="process"
-          className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
-        >
-          <div className="min-h-full pb-24 sm:pb-28">
-            <ProcessSteps onStartBooking={() => goToSlideById('booking')} />
-          </div>
-        </div>
+            {/* Slide 1: Services Grid */}
+            <div 
+              id="services"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <ServicesGrid 
+                  onSelectService={handleSelectServiceFromCard}
+                  searchQuery={searchQuery}
+                />
+              </div>
+            </div>
 
-        {/* Slide 3: Form Đặt Lịch Thợ Cấp Tốc */}
-        <div 
-          id="booking"
-          className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
-        >
-          <div className="min-h-full pb-24 sm:pb-28">
-            <BookingForm 
-              selectedServiceFromParent={selectedService}
-              initialDistrict={selectedDistrictId}
-              onBookingSubmit={handleBookingSubmit}
-            />
-          </div>
-        </div>
+            {/* Slide 2: Quy trình 3 bước */}
+            <div 
+              id="process"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <ProcessSteps onStartBooking={() => goToSlideById('booking')} />
+              </div>
+            </div>
 
-        {/* Slide 4: Bảng giá niêm yết */}
-        <div 
-          id="pricing"
-          className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
-        >
-          <div className="min-h-full pb-24 sm:pb-28">
-            <PricingTable onSelectPriceItem={handleSelectPriceItem} />
-          </div>
-        </div>
+            {/* Slide 3: Form Đặt Lịch Thợ Cấp Tốc */}
+            <div 
+              id="booking"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <BookingForm 
+                  selectedServiceFromParent={selectedService}
+                  initialDistrict={selectedDistrictId}
+                  onBookingSubmit={handleBookingSubmit}
+                />
+              </div>
+            </div>
 
-        {/* Slide 5: Tại sao chọn SmartFix */}
-        <div 
-          id="why-us"
-          className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
-        >
-          <div className="min-h-full pb-24 sm:pb-28">
-            <WhyChooseUs />
-          </div>
-        </div>
+            {/* Slide 4: Bảng giá niêm yết */}
+            <div 
+              id="pricing"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <PricingTable onSelectPriceItem={handleSelectPriceItem} />
+              </div>
+            </div>
 
-        {/* Slide 6: Khu vực phủ sóng Đà Nẵng */}
-        <div 
-          id="coverage"
-          className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
-        >
-          <div className="min-h-full pb-24 sm:pb-28">
-            <CoverageDanang onSelectDistrict={handleSelectDistrict} />
-          </div>
-        </div>
+            {/* Slide 5: Tại sao chọn SmartFix */}
+            <div 
+              id="why-us"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <WhyChooseUs />
+              </div>
+            </div>
 
-        {/* Slide 7: Khách hàng đánh giá */}
-        <div 
-          id="reviews"
-          className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
-        >
-          <div className="min-h-full pb-24 sm:pb-28">
-            <Testimonials />
-          </div>
-        </div>
+            {/* Slide 6: Khu vực phủ sóng Đà Nẵng */}
+            <div 
+              id="coverage"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <CoverageDanang onSelectDistrict={handleSelectDistrict} />
+              </div>
+            </div>
 
-        {/* Slide 8: FAQ & Footer */}
-        <div 
-          id="faqs"
-          className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
-        >
-          <div className="min-h-full pb-24 sm:pb-28">
-            <FAQSection />
-            <Footer 
-              onScrollToTop={() => goToSlide(0)} 
-              onNavigateTo={goToSlideById} 
-            />
-          </div>
-        </div>
-      </main>
+            {/* Slide 7: Khách hàng đánh giá */}
+            <div 
+              id="reviews"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <Testimonials />
+              </div>
+            </div>
 
-      {/* Desktop Floating Side Navigation Arrows */}
-      <SideSlideArrows 
-        currentSlide={currentSlide}
-        totalSlides={SLIDES.length}
-        onGoToSlide={goToSlide}
-        slides={SLIDES}
-      />
+            {/* Slide 8: FAQ & Footer */}
+            <div 
+              id="faqs"
+              className="w-full min-w-full flex-shrink-0 snap-start snap-always h-full overflow-y-auto overscroll-contain"
+            >
+              <div className="min-h-full pb-24 sm:pb-28">
+                <FAQSection />
+                <Footer 
+                  onScrollToTop={() => goToSlide(0)} 
+                  onNavigateTo={goToSlideById} 
+                />
+              </div>
+            </div>
+          </main>
 
-      {/* Bottom Floating Navigation Bar */}
-      <SlideBottomBar 
-        slides={SLIDES}
-        currentSlide={currentSlide}
-        onGoToSlide={goToSlide}
-        onBookNow={handleBookingAction}
-      />
+          {/* Desktop Floating Side Navigation Arrows */}
+          <SideSlideArrows 
+            currentSlide={currentSlide}
+            totalSlides={SLIDES.length}
+            onGoToSlide={goToSlide}
+            slides={SLIDES}
+          />
 
-      {/* Quick Floating Hotline / Action Button */}
-      <FloatingCTA 
-        currentSlide={currentSlide}
-        onBookClick={handleBookingAction} 
-      />
+          {/* Bottom Floating Navigation Bar */}
+          <SlideBottomBar 
+            slides={SLIDES}
+            currentSlide={currentSlide}
+            onGoToSlide={goToSlide}
+            onBookNow={handleBookingAction}
+          />
+
+          {/* Quick Floating Hotline / Action Button */}
+          <FloatingCTA 
+            currentSlide={currentSlide}
+            onBookClick={handleBookingAction} 
+          />
+
+          {/* Customer Quick Chat Floating Pill */}
+          {orders.some(o => ['accepted', 'arrived', 'in_progress', 'completed'].includes(o.status)) && (
+            <button
+              type="button"
+              onClick={() => {
+                const target = orders.find(o => ['accepted', 'arrived', 'in_progress'].includes(o.status)) || orders[0];
+                if (target) openChat(target.id);
+              }}
+              className="fixed bottom-18 sm:bottom-18 left-3 sm:left-6 z-40 bg-gradient-to-r from-blue-900 via-blue-800 to-sky-700 hover:from-blue-800 hover:to-sky-600 text-white px-3.5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 font-bold text-xs cursor-pointer border border-sky-400/40 hover:scale-105 transition-all select-none"
+            >
+              <MessageSquare className="w-4 h-4 text-sky-300 animate-pulse" />
+              <span>💬 Chat với Thợ</span>
+            </button>
+          )}
+        </>
+      )}
 
       {/* Booking Success Modal Popup */}
       {bookingSuccessData && (
@@ -448,6 +499,11 @@ function SmartFixApp() {
         </div>
       )}
 
+      {/* Modals for Technician & Customer Interactivity */}
+      <NewOrderAlertModal />
+      <LiveChatModal />
+      <DisputeModal />
+
       {/* Authentication Modal for Guest to Register / Login */}
       <AuthModal />
     </div>
@@ -457,7 +513,9 @@ function SmartFixApp() {
 export default function App() {
   return (
     <AuthProvider>
-      <SmartFixApp />
+      <OrderProvider>
+        <SmartFixApp />
+      </OrderProvider>
     </AuthProvider>
   );
 }

@@ -13,12 +13,15 @@ import {
   LogOut,
   CheckCircle2,
   Sparkles,
-  UserPlus
+  UserPlus,
+  User
 } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
+import { useOrders } from '../context/OrderContext';
 
 export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavigateTo }) {
   const { user, isGuest, openAuthModal, logout } = useAuth();
+  const { appRole, switchRole, pendingCount } = useOrders();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -240,6 +243,35 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
                 </div>
               )}
 
+              {/* Role Switcher Button: [Khách hàng] ↔ [Cổng Thợ Sửa Chữa] */}
+              <button
+                type="button"
+                onClick={() => switchRole(appRole === 'customer' ? 'technician' : 'customer')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer whitespace-nowrap shrink-0 shadow-sm ${
+                  appRole === 'customer'
+                    ? 'bg-amber-400 hover:bg-amber-500 text-amber-950 border border-amber-500 hover:scale-105'
+                    : 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-500 hover:scale-105'
+                }`}
+                title={appRole === 'customer' ? 'Chuyển sang Cổng Thợ Sửa Chữa (Đối tác)' : 'Quay lại giao diện Khách Hàng'}
+              >
+                {appRole === 'customer' ? (
+                  <>
+                    <Wrench className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-amber-950" />
+                    <span>🛠️ Role Thợ</span>
+                    {pendingCount > 0 && (
+                      <span className="w-4 h-4 rounded-full bg-rose-600 text-white text-[10px] font-black flex items-center justify-center animate-bounce">
+                        {pendingCount}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <User className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-white" />
+                    <span>👤 Role Khách</span>
+                  </>
+                )}
+              </button>
+
               {/* 24/7 Hotline Pill */}
               <a
                 href="tel:0905888666"
@@ -357,6 +389,37 @@ export default function Header({ onBookNowClick, activeSlideId = 'hero', onNavig
               </button>
 
               <div className="pt-4 border-t border-slate-100 flex flex-col gap-2">
+                {/* Mobile Role Switcher Pill */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    switchRole(appRole === 'customer' ? 'technician' : 'customer');
+                  }}
+                  className={`w-full py-2.5 px-3 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 border shadow-xs transition-all cursor-pointer ${
+                    appRole === 'customer'
+                      ? 'bg-amber-400 text-amber-950 border-amber-500'
+                      : 'bg-emerald-600 text-white border-emerald-500'
+                  }`}
+                >
+                  {appRole === 'customer' ? (
+                    <>
+                      <Wrench className="w-4 h-4" />
+                      <span>🛠️ Chuyển sang Cổng Thợ Sửa Chữa (Nhận đơn)</span>
+                      {pendingCount > 0 && (
+                        <span className="w-4 h-4 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center">
+                          {pendingCount}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <User className="w-4 h-4" />
+                      <span>👤 Quay lại giao diện Khách Hàng (Đặt thợ)</span>
+                    </>
+                  )}
+                </button>
+
                 {/* Mobile Auth buttons: Đăng ký & Đăng nhập riêng biệt */}
                 {isGuest ? (
                   <div className="grid grid-cols-2 gap-2">
